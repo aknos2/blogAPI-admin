@@ -1,0 +1,70 @@
+.header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.top-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.corgi-header-img {
+  width: clamp(140px, 20vw, 250px);
+  height: auto;
+  object-fit: cover;
+  margin-bottom: -6.8rem; /* Pull it into the nav */
+  z-index: 2;
+}
+
+.header-title {
+  display: flex;
+  justify-content: center;
+  gap: 12rem;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  position: absolute;
+  z-index: 1;
+}
+
+.header-title h1 {
+  color: var(--title-color);
+}
+
+nav {
+  width: 100%;
+  border-bottom: 2px solid var(--nav-border);
+  font-size: 1.6rem;
+  z-index: 2;
+  background-color: var(--nav-bg-color);
+  position: relative;
+  z-index: 0;
+}
+
+nav ul {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  list-style: none;
+}
+
+.right-side-nav {
+  display: flex;
+  gap: 2rem;
+}
+.left-side-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-links  {
+  color: var(--nav-links)
+}
+
+.menu-toggle-btn, .theme-btn {
+  border: none;
+  background-color: transparent;
+}

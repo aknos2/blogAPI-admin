@@ -1,0 +1,158 @@
+.search-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  font-family: 'Playfair Display', "Times New Roman", Times, serif;
+}
+
+.search {
+  display: flex;
+  align-items: flex-start;
+  padding: 0 1.5rem;
+}
+.search label {
+  font-weight: 600;
+  margin-bottom: -0.5rem;
+  margin-left: 0.2rem;
+  font-size: 1.5rem;
+  color:black;
+}
+.search input {
+  width: 100%;
+  font-family: inherit;
+  border-color: black;
+}
+.search input::placeholder {
+  color:black;
+}
+
+.new-posts-btn, .search-nav-links p {
+  font-size: 1.5rem;
+  padding: 0 1.5rem;
+  transition: color 0.2s ease;
+  font-weight: 700;
+}
+
+.search-date {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.5rem;
+  position: relative;
+}
+.search-date button {
+  background-color: transparent;
+  border: none;
+}
+.search-month-wrap {
+  transform: translateY(-10px);
+}
+.search-month {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: max-height 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+
+  border: 1px solid #9f9f9f;
+  border-left: none;
+  border-right: none;
+
+  padding: 0.5rem;
+}
+.search-month.open-list {
+  max-height: 500px; /* Large enough to contain full list */
+  opacity: 1;
+  transform: translateY(0);
+}
+.search-month li {
+  display: flex;
+  opacity: 0;
+  transform: translateY(-5px);
+
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+}
+.search-month li:hover {
+  cursor: pointer;
+  color: rgb(255, 145, 0);
+  background-color: rgba(255, 166, 0, 0.1);
+  border-radius: 7px;
+}
+/* Selected month highlighting */
+.search-month li.selected-month {
+  background-color: rgba(255, 166, 0, 0.518);
+  color: #333;
+  font-weight: 600;
+}
+.search-month li.selected-month:hover {
+  background-color: rgba(255, 166, 0, 0.7);
+}
+/* When dropdown is open, animate each item */
+.search-month.open-list li {
+  opacity: 1;
+  transform: translateY(0);
+}
+.search-year {
+  display: flex;
+  align-items: center;
+}
+.year-buttons {
+  display: flex;
+}
+.active-underline {
+  text-decoration: underline;
+}
+
+.new-posts-btn {
+  border: none;
+  background: transparent;
+  text-align: left;
+  margin-top: 1.5rem;
+}
+
+.category-wrap {
+  display: flex;
+  flex-direction: column;
+}
+.category-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0 1.5rem;
+}
+.category-tags button {
+  background-color: whitesmoke;
+  border: 1px solid #9f9f9f;;
+  cursor: pointer;
+}
+.category-tags button:hover {
+  background: rgba(255, 166, 0, 0.218)
+}
+.category-tags button::first-letter {
+  text-transform: capitalize;
+}
+.active-tag {
+  background: rgba(255, 166, 0, 0.518) !important;
+}
+
+
+@media(min-width: 1290px) {
+  .search-month ul {
+    font-size: 1.5rem;
+    grid-template-columns: 1fr 1fr;
+  }
+  .search input {
+    width: 90%;
+    font-size: 1.2rem;
+  }
+}

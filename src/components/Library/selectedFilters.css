@@ -1,0 +1,68 @@
+.filter-summary {
+  margin: 1rem 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.filters-active {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filter-item {
+  padding: 0.4rem 0rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.filter-item button {
+  background: none;
+  border: none;
+  font-weight: bold;
+  color: #fffcfc;
+  cursor: pointer;
+}
+.filter-item svg {
+  fill: white;
+  margin-left: -0.2rem;
+  width: 25px;
+  height: 25px;
+}
+
+.clear-all-btn {
+  background: none;
+  border: none;
+  color: #fffcfc;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: left;
+  transform: translateX(-0.1rem);
+}
+
+figcaption .month-title {
+  position: absolute;
+  top: 5%;
+  padding: 0.5rem;
+  transform: translateY(0.5rem);
+  background: rgba(0, 0, 0, 0.153);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.items-center {
+  display: flex;
+  font-weight: 400;
+}
+.filter-item .items-center::first-letter {
+  text-transform: capitalize;
+}
+
+.month-title button {
+  background-color: transparent;
+  color: #fff;
+  font-size: 1.2rem;
+  border: none;
+}

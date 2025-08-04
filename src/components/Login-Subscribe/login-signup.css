@@ -1,0 +1,195 @@
+.background-overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgb(0,0,0,0.5);
+  z-index: 999;
+}
+
+.signup-container {
+  border: 1px solid black;
+  border-top: none;
+  width: 25rem;
+  padding: 2rem;
+  margin: 0 auto;
+  background-color: white;
+}
+.signup-container h1 {
+  text-align: center;
+  font-size: 2rem;
+}
+
+.login-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid black;
+  border-radius: 99px;
+  width: 25rem;
+  padding: 2rem 4rem;
+  margin: 0 auto;
+  background-color: white;
+}
+.login-container form, 
+.signup-container form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+}
+.login-container label,
+.signup-container label {
+  margin-top: 0.5rem;
+}
+.signup-container label > span {
+  font-size: 1rem;
+}
+.login-container input,
+.signup-container input {
+  padding: 5px;
+  font-family: inherit;
+  font-size: 1.2rem;
+}
+.login-container button,
+.signup-container button {
+  margin-top: 1.2rem;
+  font-family: inherit;
+  padding: 0.3rem;
+  font-weight: bold;
+  background-color: orange;
+}
+.login-container button:hover,
+.signup-container button:hover {
+  color: azure;
+  cursor: pointer;
+}
+.login-container p {
+  float: right;
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
+}
+.login-container a {
+  color: blue;
+  text-decoration: underline;
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 2.5rem; /* space for the eye icon */
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 0.5rem;
+  background: none !important;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transform: translate(0, -25%);
+}
+.toggle-password-btn svg{
+  opacity: 0.8;
+}
+
+.close-login-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(1rem, -2rem);
+  border-radius: 50%;
+}
+.close-login-btn svg{
+  width: 30px;
+  height: 30px;
+}
+
+.password-instruction {
+  font-size: 1rem;
+}
+
+.error-message, .error-messages {
+  color: red;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.success-message {
+  color: green;
+  margin-bottom: 10px;
+}
+
+.success-login-message {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  border: 0.5px solid black;
+  border-left: none;
+  background-color: transparent;
+  color: white;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0 4px 4px 0;
+  text-align: center;
+  font-size: 1.2rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  z-index: 999;
+  overflow: hidden;
+  transition: right 0.7s ease-in-out, opacity 0.7s ease-in-out;
+}
+
+/* Slide in */
+.success-login-message.slide-in-message {
+  opacity: 1;
+}
+.slide-in-message > span {
+  display: inline-block;
+  animation: text-jump 0.5s ease-in-out forwards;
+  animation-delay: 1s;
+  animation-fill-mode: both;
+}
+
+/* Pseudo-element for filling effect */
+.success-login-message::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #53c715; 
+  width: 0%;
+  z-index: -1;
+  animation: fill-charge 1s ease-in-out forwards;
+  border-radius: 0 4px 4px 0;
+}
+
+@keyframes fill-charge {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+@keyframes text-jump {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
