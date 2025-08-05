@@ -6,9 +6,8 @@ import { useEffect, useState } from 'react';
 
 const themes = ["default", "green", "dark", "west"];
 
-function Header({ onMenuToggle, menuBtnRef, headerRef }) {
+function Header({ onMenuToggle, menuBtnRef}) {
   const [themeIndex, setThemeIndex] = useState(0);
-
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("selectedTheme");
@@ -30,7 +29,7 @@ function Header({ onMenuToggle, menuBtnRef, headerRef }) {
   };
 
   return (
-    <header className="header-container no-select" ref={headerRef}>
+    <header className="header-container no-select">
       <div className="top-section">
         <img className="corgi-header-img" src={corgiHeader} alt="corgi face" />
         <div className="header-title">

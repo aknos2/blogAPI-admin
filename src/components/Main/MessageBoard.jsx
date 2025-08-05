@@ -1,22 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import './messageBoard.css';
 import profileImg from '/assets/corgi/profile/white-cat-icon.png'
 import { CloseIcon, SendMsgIcon } from '../Icons';
 import Button from '../Button';
-import { createComment, fetchCommentsByPostId } from '../../../api/posts';
-import { useHeader } from '../Header/HeaderContext';
+import { createComment, deleteComment, fetchCommentsByPostId } from '../../../api/posts';
 
 function MessageBoard({ isChatOpen, onToggleChat, postId, isAuthenticated, user, onAuthChange }) {
   const [message, setMessage] = useState('');
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loginMessage, setLoginMessage] = useState('');
-  const { headerPosition, headerPositionReady } = useHeader();
 
   useEffect(() => {
     async function loadComments() {
       try {
         const res = await fetchCommentsByPostId(postId);
+        console.log('Fetched comments response:', res);
         setComments(res.data);
       } catch (err) {
         console.error('Failed to fetch comments:', err);
@@ -28,12 +27,21 @@ function MessageBoard({ isChatOpen, onToggleChat, postId, isAuthenticated, user,
       loadComments();
     }
   }, [postId]);
- 
-  const handleChange = (e) => {
-    setMessage(e.target.value);
-  };
 
-  const handleSend = async () => {
+  // Debug: Log the structure
+  useEffect(() => {
+    if (comments.length > 0 && user) {
+      console.log('Sample comment:', comments[0]);
+      console.log('Current user:', user);
+      console.log('User role type:', typeof user.role, user.role);
+    }
+  }, [comments, user]);
+  
+  const handleChange = useCallback((e) => {
+    setMessage(e.target.value);
+  }, []);
+
+  const handleSend = useCallback(async () => {
     if (!isAuthenticated) {
       setLoginMessage('Log in to post a message');
       setTimeout(() => setLoginMessage(''), 3000);
@@ -44,11 +52,8 @@ function MessageBoard({ isChatOpen, onToggleChat, postId, isAuthenticated, user,
 
     try {
       const res = await createComment(message, postId);
-      // Add the new comment with user information
-      const newComment = {
-        ...res.data,
-        user: user // Use the user data from props
-      };
+      // The backend now returns { data: comment }, so use res.data
+      const newComment = res.data;
       setComments(prev => [newComment, ...prev]);
       setMessage('');
     } catch(err) {
@@ -63,15 +68,44 @@ function MessageBoard({ isChatOpen, onToggleChat, postId, isAuthenticated, user,
         setLoginMessage('Failed to send a message.');
       }
     }
-  };
+  }, [isAuthenticated, message, postId, onAuthChange]);
+
+  const handleDeleteMessage = useCallback(async (commentId) => {
+     if (!isAuthenticated) {
+      alert("Need to be logged in as admin to delete messages.")
+      return;
+    }
+
+    try {
+      await deleteComment(commentId);
+      setComments(prev => prev.filter(comment => comment.id !== commentId));
+    } catch (err) {
+      console.error('Failed to delete comment:', err);
+      setLoginMessage('Failed to delete comment');
+      setTimeout(() => setLoginMessage(''), 3000);
+
+      // Optional: handle session expiry
+      if (err.response?.status === 401) {
+        setLoginMessage('Session expired. Please log in again.');
+        onAuthChange(false, null);
+      }
+    }
+  }, [isAuthenticated, onAuthChange]);
+
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();    
+      handleSend();         
+    }
+  }, [handleSend]);
 
   useEffect(() => {
     const container = document.querySelector('.message-board-container');
     if (container) container.scrollTop = container.scrollHeight;
   }, [comments]);
 
-  // Format date for display
-  const formatDate = (dateString) => {
+  // Memoize the formatted date function
+  const formatDate = useCallback((dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -79,25 +113,26 @@ function MessageBoard({ isChatOpen, onToggleChat, postId, isAuthenticated, user,
       hour: '2-digit',
       minute: '2-digit'
     });
-  };
+  }, []);
 
-  // Don't render until header position is ready
-  if (!headerPositionReady) {
-    return null;
-  }
-
-  // Position the message board right below the header on the right side
-  const style = {
-    position: 'fixed',
-    top: `${headerPosition.top}px`,
-    right: '0',
-    zIndex: 998,
-  };
+  // Helper function to check if user can delete comment
+  const canDeleteComment = useCallback((comment) => {
+    if (!user || !isAuthenticated) return false;
+    
+    // User can delete their own comments
+    const isOwner = user.id === comment.user?.id;
+    
+    // Admin can delete any comment
+    // Handle different role structures - your user.role might be an object or string
+    const userRole = typeof user.role === 'object' ? user.role?.role : user.role;
+    const isAdmin = userRole === 'ADMIN';
+    
+    return isOwner || isAdmin;
+  }, [user, isAuthenticated]);
 
   return (
     <div
       className={`message-board-container ${isChatOpen ? 'slide-in-chat' : 'slide-out-chat'}`}
-      style={style}
     >
       <Button
         onClick={onToggleChat}
@@ -122,6 +157,15 @@ function MessageBoard({ isChatOpen, onToggleChat, postId, isAuthenticated, user,
                 <div className="upper-part">
                   <p className="username">{comment.user?.username || 'Anonymous'}</p>
                   <p className="message">{comment.content}</p>
+                  {canDeleteComment(comment) && (
+                    <button
+                      className="delete-comment-btn"
+                      onClick={() => handleDeleteMessage(comment.id)}
+                      aria-label="Delete comment"
+                    >
+                      ❌
+                    </button>
+                  )}
                 </div>
                 <div className="lower-part">
                   <p className="date">{formatDate(comment.createdAt)}</p>
@@ -142,12 +186,7 @@ function MessageBoard({ isChatOpen, onToggleChat, postId, isAuthenticated, user,
         <textarea
           value={message}
           onChange={handleChange}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();    
-              handleSend();         
-            }
-          }}
+          onKeyDown={handleKeyDown}
           placeholder={isAuthenticated ? "Message..." : "Please log in to comment"}
           rows={1}
         />

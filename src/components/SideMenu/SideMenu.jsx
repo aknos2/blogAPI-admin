@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import './sideMenu.css'
 import profileImg from '/assets/corgi/profile/white-cat-icon.png'
 import Button from '../Button';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { logoutAccount } from '../../../api/auth';
 import { fetchUserStats } from '../../../api/user';
 
-function SideMenu({isOpen, position, onToggleLogin, onMenuToggle}) {
+function SideMenu({isOpen, onToggleLogin, onMenuToggle}) {
   const [visible, setVisible] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [userStats, setUserStats] = useState({ comments: 0, likes: 0 });
@@ -82,18 +82,8 @@ function SideMenu({isOpen, position, onToggleLogin, onMenuToggle}) {
 
   if (!visible) return null;
 
-  const style = {
-    position: 'absolute',
-    top: `${position.top}px`,
-    left: `${position.left}px`,
-    width: '17rem',
-    background: '#f9f9f9',
-    boxShadow: '4px 0 8px rgba(0, 0, 0, 0.05)',
-    zIndex: 999,
-  }
-
   return (
-    <aside style={style} className={`side-menu ${isOpen ? 'slide-in' : 'slide-out'}`}>
+    <aside className={`side-menu ${isOpen ? 'slide-in' : 'slide-out'}`}>
       <div >
         {loggedIn ? (
           <div className="profile">
@@ -132,9 +122,6 @@ function SideMenu({isOpen, position, onToggleLogin, onMenuToggle}) {
               />
             ) : (
               <>
-                <Link to="signup">
-                  <Button onClick={onMenuToggle} className="create-account-btn" text="Create account"/>
-                </Link>
                 <Button onClick={onToggleLogin} className='login-btn' text="Login"/>
               </>
             )}

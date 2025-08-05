@@ -2,6 +2,8 @@ import api from './index';
 
 export const fetchPosts = () => api.get('/posts');
 
+export const fetchUnpublishedPosts = () => api.get('/posts/unpublished');
+
 export const getPostsByCategory = () => api.get('/category/:category');
 
 export const fetchCommentsByPostId = (postId) => api.get(`/comments/post/${postId}`);

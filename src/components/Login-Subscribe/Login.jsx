@@ -54,11 +54,6 @@ function LoginScreen({ onToggleLogin }) {
     
     // Navigate to home
     navigate('/');
-
-    // Wait a tiny bit to ensure modal closes first
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
     
     setLogoutLoading(false);
   };
@@ -81,9 +76,6 @@ function LoginScreen({ onToggleLogin }) {
       
       // Close modal
       onToggleLogin();
-
-      // Clean page reload after modal closes
-      setTimeout(() => window.location.reload(), 100);
       
       console.log('Login successful:', response.data);
     } catch (err) {

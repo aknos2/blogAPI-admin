@@ -1,19 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
 const HeaderContext = createContext();
 
-export const useHeader = () => {
-  const context = useContext(HeaderContext);
-  if (!context) {
-    throw new Error('useHeader must be used within a HeaderProvider');
-  }
-  return context;
-};
-
-export const HeaderProvider = ({ children, headerPosition, headerPositionReady }) => {
+export const HeaderProvider = ({ children }) => {
   return (
-    <HeaderContext.Provider value={{ headerPosition, headerPositionReady }}>
+    <HeaderContext.Provider>
       {children}
     </HeaderContext.Provider>
   );

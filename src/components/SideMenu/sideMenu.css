@@ -1,6 +1,6 @@
 .side-menu {
   position: fixed;
-  top: 0;
+  top: calc((100vh - 75vh) - 0.3rem);
   left: 0;
   transform: translateX(-100%);
   background-color: white;
@@ -35,7 +35,7 @@
 /* Animate in from left */
 .slide-in {
   opacity: 1;
-  transform: translateX(-2rem);
+  transform: translateX(0);
 }
 
 /* Animate out to left */
@@ -109,4 +109,12 @@
 }
 .not-used {
   opacity: 0.3;
+}
+
+@media(min-width: 1290px) {
+  .side-menu {
+    top: calc((100vh - 80vh));
+    width: 20rem;
+    font-size: 2rem;
+  }
 }

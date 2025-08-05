@@ -6,17 +6,19 @@ import SearchDate from './SearchArticles';
 import Button from '../Button';
 import { getLatestDates, currentYear, currentMonth } from '../../utils/getLatestDates';
 import SelectedFilters from './SelectedFilters';
-import { fetchPosts } from '../../../api/posts';
+import { fetchPosts, fetchUnpublishedPosts } from '../../../api/posts';
 import { useNavigate } from 'react-router-dom';
 
 function Library() {
   const navigate = useNavigate();
   const [articles, setArticles] = useState([]);
+  const [unpublishedArticles, setUnpublishedArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [published, setPublished] = useState(true);
   
   // Get latest dates from current articles
   const { latestYear, latestMonth } = getLatestDates(articles);
@@ -45,6 +47,21 @@ function Library() {
     loadPosts();
   }, []);
 
+  useEffect(() => {
+    async function loadUnpublishedPosts() {
+      try {
+        const res = await fetchUnpublishedPosts();
+        console.log('Library posts response:', res.data); // Debug log
+        setUnpublishedArticles(res.data);
+      } catch (err) {
+        console.error('Failed to fetch posts:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadUnpublishedPosts();
+  }, []);
+
   // Show loading state
   if (loading) return <div>Loading...</div>;
   
@@ -54,6 +71,23 @@ function Library() {
   }
 
   const filteredArticles = articles.filter(article => {
+    // Extract year and month from createdAt
+    const articleDate = new Date(article.createdAt);
+    const articleYear = articleDate.getFullYear();
+    const articleMonth = articleDate.toLocaleString('default', { month: 'long' });
+    
+    // Get tag names for comparison
+    const articleTagNames = article.tags?.map(tag => tag.name) || [];
+    
+    const matchesYear = !selectedYear || articleYear === selectedYear;
+    const matchesMonth = !selectedMonth || articleMonth.toLowerCase() === selectedMonth.toLowerCase();
+    const matchesTags = selectedTags.length === 0 || selectedTags.every(tag => articleTagNames.includes(tag));
+    const matchesSearch = article.title.toLowerCase().includes(searchQuery.trim().toLowerCase());
+
+    return matchesYear && matchesMonth && matchesTags && matchesSearch;
+  });
+
+  const filteredUnpublishedArticles = unpublishedArticles.filter(article => {
     // Extract year and month from createdAt
     const articleDate = new Date(article.createdAt);
     const articleYear = articleDate.getFullYear();
@@ -95,6 +129,10 @@ function Library() {
   const handleSearchTool = (e) => {
     setSearchQuery(e.target.value);
   };
+
+  const handleUnpublishedArticles = () => {
+    setPublished(prev => !prev);
+  }
 
   // Helper function to format date
   const formatDate = (dateString) => {
@@ -145,11 +183,15 @@ function Library() {
                 ))}
               </div>
             </div>
+
+            <div className='unpublished-wrap'>
+              <Button onClick={handleUnpublishedArticles} text={published ? "PUBLISHED" : "UNPUBLISHED"}/>
+            </div>
           </nav>
         </div>
         
         <div className='articles-compilation'>
-          {filteredArticles.length > 0 ? (
+          {published ? (
             filteredArticles.map((article, index) => (
               <figure className="article-card" key={article.id || index} onClick={() => handleArticleClick(article.id)}>
                 <img 
@@ -167,9 +209,7 @@ function Library() {
                       <CommentsIcon/> 
                       <p>{article.comments?.length || 0}</p>
                     </div>
-                  </div>
-                  {/* Only show this extra text on the first article */}
-                  {index === 0 &&  
+                  </div>  
                     <SelectedFilters
                       className="month-title"
                       selectedYear={selectedYear}
@@ -181,12 +221,42 @@ function Library() {
                       searchQuery={searchQuery}
                       setSearchQuery={setSearchQuery}
                     />
-                  }
                 </figcaption>
               </figure>
             ))
           ) : (
-            <p className='not-found'>No articles found</p>
+             filteredUnpublishedArticles.map((article, index) => (
+              <figure className="article-card" key={article.id || index} onClick={() => handleArticleClick(article.id)}>
+                <img 
+                  src={article.thumbnail?.url} 
+                  alt={article.thumbnail?.altText || 'Article thumbnail'} 
+                />
+                <figcaption>
+                  <h3 className='card-date'>{formatDate(article.createdAt)}</h3>
+                  <div className='card-stats'>
+                    <div className='stats-wrap'>
+                      <HeartIcon/> 
+                      <p>{article.Like?.length || 0}</p>
+                    </div>
+                    <div className='stats-wrap'>
+                      <CommentsIcon/> 
+                      <p>{article.comments?.length || 0}</p>
+                    </div>
+                  </div>  
+                    <SelectedFilters
+                      className="month-title"
+                      selectedYear={selectedYear}
+                      setSelectedYear={setSelectedYear}
+                      selectedMonth={selectedMonth}
+                      setSelectedMonth={setSelectedMonth}
+                      selectedTags={selectedTags}
+                      setSelectedTags={setSelectedTags}
+                      searchQuery={searchQuery}
+                      setSearchQuery={setSearchQuery}
+                    />
+                </figcaption>
+              </figure>
+            ))
           )}
         </div>
       </div>

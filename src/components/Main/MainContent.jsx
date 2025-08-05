@@ -2,11 +2,9 @@ import './mainContent.css';
 import Article from "./Article";
 import MessageBoard from './MessageBoard';
 import { useState, useEffect } from 'react';
-import { useHeader } from '../Header/HeaderContext';
 import { fetchUserStats } from '../../../api/user';
 
 function MainContent() {
-  const { headerPosition } = useHeader();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [currentPostId, setCurrentPostId] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -65,7 +63,6 @@ function MainContent() {
       />
       <MessageBoard 
         isChatOpen={isChatOpen} 
-        headerPosition={headerPosition} 
         onToggleChat={toggleChat}
         postId={currentPostId}
         isAuthenticated={isAuthenticated}
