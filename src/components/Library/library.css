@@ -22,37 +22,6 @@
   background-color: transparent;
 }
 
-.search-menu {
-  flex: 0.38;
-  background-color: var(--container-color);
-  padding: 0.5rem;
-  padding-top: 2rem;
-  position: relative;
-  z-index: 5;
-  border-style: outset;
-  overflow-y: auto;
-}
-
-.search {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.search label {
-  font-size: 0.9rem;
-  color: #555;
-  text-align: left;
-}
-
-.search input {
-  padding: 0.6rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  outline-color: #ff9900;
-}
-
 .articles-compilation {
   flex: 1;
   display: grid;

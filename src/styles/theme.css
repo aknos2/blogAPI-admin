@@ -16,6 +16,30 @@
   --arrows: rgb(242, 242, 219, 0.2);
   --arrows-hover: rgb(242, 242, 219, 0.6);
   --library-photos-border: rgb(255, 255, 255);
+  --search-container-border: outset;
+  --categories-tags: whitesmoke;
+  --categories--tags-hover: rgba(255, 166, 0, 0.218);
+  --categories-tags-border: #9f9f9f;
+  --categories-tags-active: rgba(255, 166, 0, 0.518);
+  --selected-month-text: #333;
+  --selected-month-text-hover-bg-color: rgba(255, 166, 0, 0.453);
+  --search-label-text:black;
+  --search-input-border: black;
+  --search-input-outline: #ff9900;
+  --library-search-border: #9f9f9f;
+  --messageBoard-border: #494848;
+  --messageBoard-background: rgb(252, 252, 250);;
+  --messageBoard-close-btn-bg-color: rgb(238, 245, 250);
+  --messageBoard-close-btn-icon-color: #000000;
+  --messageBoard-avatar-border: #ccc;
+  --messageBoard-username: #333;
+  --messageBoard-message: #555;
+  --messageBoard-date: #999;
+  --messageBoard-comment-wrap: #fcc680;
+  --messageBoard-comment-textarea: #f0f0f0;
+  --messageBoard-comment-btn: #de790d;
+  --messageBoard-comment-btn-icon: #000000;
+  --messageBoard-comment-btn-icon-hover: #f1ecec;
 }
 
 [data-theme="dark"] {
@@ -26,16 +50,40 @@
   --photo-container-color: #a89f9f35;
   --nav-bg-color: #121212;
   --title-color: #f0f0f0;
-  --nav-border: #f0f0f0;
+  --nav-border: #464646;
   --nav-links: #f0f0f0;
   --article-title-color: #f0f0f0;
-  --article-bg-color: #cfcfcf35;
+  --article-bg-color: rgb(51, 51, 50);;
   --article-like-chat: #f0f0f0;
-  --tags: orange;
+  --tags: rgba(162, 248, 42, 0.515);
   --tags-hover-article: #e6851a;
   --arrows: rgba(226, 226, 209, 0.543);
   --arrows-hover: rgba(243, 243, 234, 0.92);
   --library-photos-border: rgb(87, 87, 85);
+  --search-container-border: none;
+  --categories-tags: rgb(109, 106, 106);
+  --categories--tags-hover: rgba(129, 127, 125, 0.218);
+  --categories-tags-border: #7b7979;
+  --categories-tags-active: rgba(162, 248, 42, 0.41);
+  --selected-month-text: #f0f0f0;
+  --selected-month-text-hover-bg-color: rgba(162, 248, 42, 0.515);
+  --search-label-text:#f0f0f0;
+  --search-input-border: rgb(87, 86, 86);
+  --search-input-outline: rgba(162, 248, 42, 0.75);
+  --selected-month-border: #a1a1a1;
+  --messageBoard-border: #494848;
+  --messageBoard-bg-color: #cfcfcf35;
+  --messageBoard-close-btn-bg-color: rgb(46, 46, 46);
+  --messageBoard-close-btn-icon-color: #fffcfc;
+  --messageBoard-avatar-border: #ffffff;
+  --messageBoard-username: #ffffff;
+  --messageBoard-message: #f4f2f2;
+  --messageBoard-date: #999;
+  --messageBoard-comment-wrap: #645037;
+  --messageBoard-comment-textarea: #212121;
+  --messageBoard-comment-btn: #b66713;;
+  --messageBoard-comment-btn-icon: #000000;
+  --messageBoard-comment-btn-icon-hover: #f1ecec;
 }
 
 [data-theme="green"] {

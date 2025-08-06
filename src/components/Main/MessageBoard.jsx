@@ -148,7 +148,7 @@ function MessageBoard({ isChatOpen, onToggleChat, postId, isAuthenticated, user,
         ) : (
           comments.map((comment) => (
             <div key={comment.id} className="message-wrap">
-              <img src={profileImg} alt="user icon" />
+              <img src={profileImg} alt="user icon" className='no-select'/>
               <div>
                 <div className="upper-part">
                   <p className="username">{comment.user?.username || 'Anonymous'}</p>
@@ -162,7 +162,7 @@ function MessageBoard({ isChatOpen, onToggleChat, postId, isAuthenticated, user,
                   )}
                 </div>
                 <div className="lower-part">
-                  <p className="date">{formatDate(comment.createdAt)}</p>
+                  <p className="date no-select">{formatDate(comment.createdAt)}</p>
                 </div>
               </div>
             </div>
@@ -172,7 +172,7 @@ function MessageBoard({ isChatOpen, onToggleChat, postId, isAuthenticated, user,
     
       <div className="message-input">
         {loginMessage && (
-          <div className={`login-chat-message ${loginMessage ? 'show' : ''}`}>
+          <div className={`login-chat-message no-select ${loginMessage ? 'show' : ''}`}>
             {loginMessage}
           </div>
         )}
@@ -188,7 +188,7 @@ function MessageBoard({ isChatOpen, onToggleChat, postId, isAuthenticated, user,
         <Button
           onClick={handleSend}
           ariaLabel="Send message"
-          text={<SendMsgIcon className={'send-msg-icon'} />}
+          text={<SendMsgIcon className={'send-msg-icon no-select'} />}
         />
       </div>
     </div>
