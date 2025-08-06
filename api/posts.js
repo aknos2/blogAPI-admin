@@ -13,3 +13,13 @@ export const createComment = (content, postId) => api.post('/comments', { conten
 export const deleteComment = (commentId) => api.delete(`/comments/${commentId}`);
 
 export const togglePostLike = (postId) => api.post(`/posts/${postId}/like`);
+
+export const editArticle = async (postId, pageId, data) => {
+  try {
+    const response = await api.put(`/posts/${postId}/pages/${pageId}`, data);
+    return response;
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
+  }
+};

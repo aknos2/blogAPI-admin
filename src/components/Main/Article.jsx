@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { ArrowLeftIcon, ArrowRightIcon, ChatIcon, HeartIcon } from '../Icons';
 import Button from '../Button';
 import './article.css';
-import { fetchPosts, togglePostLike } from '../../../api/posts';
+import { editArticle, fetchPosts, togglePostLike } from '../../../api/posts';
 import { useParams } from 'react-router-dom';
+import TinyMCEEditor from '../TinyMCE';
+import parse from 'html-react-parser';
 
-function Article({ onToggleChat, onPostChange, isAuthenticated, user, onAuthChange }) {
+function Article({ onToggleChat, onPostChange, isAuthenticated, user}) {
   const { articleId } = useParams();
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -14,6 +16,8 @@ function Article({ onToggleChat, onPostChange, isAuthenticated, user, onAuthChan
   const [likedPosts, setLikedPosts] = useState(new Set());
   const [likeCounts, setLikeCounts] = useState({});
   const [isLiking, setIsLiking] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [combinedContent, setCombinedContent] = useState('');
 
   useEffect(() => {
     async function loadPosts() {
@@ -95,6 +99,97 @@ function Article({ onToggleChat, onPostChange, isAuthenticated, user, onAuthChan
     }
   };
 
+  const totalPages = currentArticle?.postPage.length;
+  const currentPageData = currentArticle?.postPage[currentPage];
+  
+
+  useEffect(() => {
+    if (isEditing && currentPageData) {
+        const heading = currentPageData?.heading || '';
+        const subtitle = currentPageData?.subtitle || '';
+        const content = currentPageData?.content || '';
+
+        setCombinedContent(`
+          <h2>${heading}</h2>
+          <h4>${subtitle}</h4>
+          ${content}
+        `);
+      }
+  }, [isEditing, currentPageData]);
+
+  // Replace your handleSave function in Article.jsx with this improved version
+
+  const handleSave = async () => {
+    try {
+      // Validate required data
+      if (!currentPageData || !currentPageData.id) {
+        throw new Error('Current page data is missing');
+      }
+      
+      if (!currentArticle || !currentArticle.id) {
+        throw new Error('Current article data is missing');
+      }
+
+      const pageId = currentPageData.id;
+      const postId = currentArticle.id;
+
+      // Parse the HTML content
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(combinedContent, 'text/html');
+
+      const newHeading = doc.querySelector('h2')?.innerHTML || '';
+      const newSubtitle = doc.querySelector('h4')?.innerHTML || '';
+
+      // Get everything else after subtitle
+      const paragraphs = [...doc.body.children].filter(
+        (el) => !['H2', 'H4'].includes(el.tagName)
+      );
+      const newContent = paragraphs.map((el) => el.outerHTML).join('\n');
+
+      const updateData = {
+        heading: newHeading,
+        subtitle: newSubtitle,
+        content: newContent,
+      };
+
+      // Make the API call
+      const response = await editArticle(postId, pageId, updateData);
+      
+      // Check if the response is successful
+      if (response && (response.status === 200 || response.data)) {
+        // Update the local state with new content
+        setPosts(prevPosts => 
+          prevPosts.map(post => {
+            if (post.id === postId) {
+              return {
+                ...post,
+                postPage: post.postPage.map(page => {
+                  if (page.id === pageId) {
+                    return {
+                      ...page,
+                      heading: newHeading,
+                      subtitle: newSubtitle,
+                      content: newContent
+                    };
+                  }
+                  return page;
+                })
+              };
+            }
+            return post;
+          })
+        );
+        
+        setIsEditing(false);
+        console.log('Save successful!');
+      } else {
+        throw new Error('Unexpected response format');
+      }
+    } catch (error) {
+      console.error('Error saving article:', error);
+    }
+  };
+
   // Show loading state
   if (loading) return <div>Loading...</div>;
   
@@ -108,8 +203,7 @@ function Article({ onToggleChat, onPostChange, isAuthenticated, user, onAuthChan
     return <div>No article content available.</div>;
   }
 
-  const totalPages = currentArticle.postPage.length;
-  const currentPageData = currentArticle.postPage[currentPage];
+ 
   const isCurrentlyLiked = likedPosts.has(currentArticle.id);
   const likeCount = likeCounts[currentArticle.id] || 0;
 
@@ -131,24 +225,44 @@ function Article({ onToggleChat, onPostChange, isAuthenticated, user, onAuthChan
                   )) || []}
                 </div>
               </div>
+              <div className='edit-btn'>
+                <Button onClick={() => setIsEditing(true)} text="EDIT"/>
+              </div>
             </div>
 
             <div className={`page-content ${isSliding ? 'sliding' : ''}`}>
               <div className="content-grid-titlePage">
                 <div className="img-content no-select">
-                   {pageImage && (
-                  <img 
-                    src={pageImage.url} 
-                    alt={pageImage.altText || pageData.PageImage?.[0]?.caption || 'image'} 
-                  />
-                )}
+                  {pageImage && (
+                    <img 
+                      src={pageImage.url} 
+                      alt={pageImage.altText || pageData.PageImage?.[0]?.caption || 'image'} 
+                    />
+                  )}
                 </div>
                 <div className="text-content">
-                  <h4>{pageData.heading}</h4>
-                  <p>{pageData.subtitle}</p>
-                  <div className="article-content">
-                    <p>{pageData.content}</p>
-                  </div>
+                  {isEditing ? (
+                    <div className='editing-tool'> 
+                      <TinyMCEEditor
+                        value={combinedContent}
+                        onEditorChange={(html) => setCombinedContent(html)}
+                      />
+                      <div style={{ marginTop: '10px' }}>
+                        <Button text="Save" onClick={handleSave} />
+                        <Button text="Cancel" onClick={() => setIsEditing(false)} />
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {parse(pageData.heading || '')}
+                      <div>
+                        {parse(pageData.subtitle || '')}  
+                      </div>
+                      <div className="article-content">
+                        {parse(pageData.content || '')}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -167,17 +281,38 @@ function Article({ onToggleChat, onPostChange, isAuthenticated, user, onAuthChan
                 )}
             </div>
             <div className="text-content">
-              <p>{pageData.subtitle}</p>
-              <div className="article-content">
-                <p>{pageData.content}</p>
-              </div>
+              {isEditing ? (
+                    <div className='editing-tool'> 
+                      <TinyMCEEditor
+                        value={combinedContent}
+                        onEditorChange={(html) => setCombinedContent(html)}
+                      />
+                      <div style={{ marginTop: '10px' }}>
+                        <Button text="Save" onClick={handleSave} />
+                        <Button text="Cancel" onClick={() => setIsEditing(false)} />
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div>
+                        {parse(pageData.subtitle || '')}  
+                      </div>
+                      <div className="article-content">
+                        {parse(pageData.content || '')}
+                      </div>
+                    </>
+                  )}
             </div>
+                 <div className='edit-btn'>
+                  <Button onClick={() => setIsEditing(true)} text="EDIT"/>
+                </div>
           </div>
         );
       default:
         return <div>Unsupported layout</div>;
     }
   };
+  
 
   const goToNextPage = () => {
     if (currentPage < totalPages - 1) {
@@ -206,6 +341,10 @@ function Article({ onToggleChat, onPostChange, isAuthenticated, user, onAuthChan
       <div className='content-bottom'>
         <div className='page-indicator'>
           <span>Page {currentPage + 1} of {totalPages}</span>
+        </div>
+
+        <div className='publish-btn'>
+          <Button text="PUBLISH"/>
         </div>
 
         <div className='right-wrap no-select'>

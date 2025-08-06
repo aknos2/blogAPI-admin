@@ -11,27 +11,57 @@ function MainContent() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadUserData() {
-      try {
-        const token = localStorage.getItem('accessToken');
-        setIsAuthenticated(!!token);
-        
-        if (token) {
+  // Function to load user data
+  const loadUserData = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const userData = localStorage.getItem('user');
+      
+      setIsAuthenticated(!!token);
+      
+      if (token && userData) {
+        try {
           const userResponse = await fetchUserStats();
           setUser(userResponse.data);
+        } catch (err) {
+          console.error('Failed to fetch fresh user data, using cached:', err);
+          // Fall back to cached user data if API fails
+          setUser(JSON.parse(userData));
         }
-      } catch (err) {
-        console.error('Failed to fetch user data:', err);
-        // If user fetch fails, user might be logged out
-        setIsAuthenticated(false);
+      } else {
         setUser(null);
-      } finally {
-        setLoading(false);
       }
+    } catch (err) {
+      console.error('Failed to load user data:', err);
+      setIsAuthenticated(false);
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
-    
+  };
+
+  useEffect(() => {
     loadUserData();
+
+    // Listen for localStorage changes (from login/logout in same tab)
+    const handleStorageChange = (e) => {
+      if (e.key === 'accessToken' || e.key === 'user') {
+        loadUserData();
+      }
+    };
+
+    // Listen for custom login/logout events
+    const handleAuthChange = () => {
+      loadUserData();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('authStateChange', handleAuthChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('authStateChange', handleAuthChange);
+    };
   }, []);
 
   const toggleChat = () => {

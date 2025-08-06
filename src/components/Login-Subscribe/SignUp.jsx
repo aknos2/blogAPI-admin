@@ -36,10 +36,16 @@ function SignUp() {
       
       setSuccess(response.data.message);
       
-      // Redirect to login after successful signup
+      // Set signup success flag for the success message
+      localStorage.setItem("signupSuccess", "true");
+      
+      // Navigate to home page
+      navigate('/');
+      
+      // Dispatch event to notify other components
       setTimeout(() => {
-        navigate('/');
-      }, 1000);
+        window.dispatchEvent(new CustomEvent('authStateChange'));
+      }, 100);
       
     } catch (err) {
       if (err.response?.data?.errors) {

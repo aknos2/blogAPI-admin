@@ -61,6 +61,9 @@ function SideMenu({isOpen, onToggleLogin, onMenuToggle}) {
       setLoggedIn(false);
       setUserStats({ comments: 10, likes: 7 }); // Reset to demo stats
       
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new CustomEvent('authStateChange'));
+      
       // Close menu
       onMenuToggle();
 
@@ -75,6 +78,9 @@ function SideMenu({isOpen, onToggleLogin, onMenuToggle}) {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('user');
       setLoggedIn(false);
+      
+      // Dispatch event even on error
+      window.dispatchEvent(new CustomEvent('authStateChange'));
     } finally {
       setLoading(false);
     }

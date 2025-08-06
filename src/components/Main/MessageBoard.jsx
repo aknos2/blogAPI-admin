@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import './messageBoard.css';
 import profileImg from '/assets/corgi/profile/white-cat-icon.png'
 import { CloseIcon, SendMsgIcon } from '../Icons';
@@ -37,9 +37,9 @@ function MessageBoard({ isChatOpen, onToggleChat, postId, isAuthenticated, user,
     }
   }, [comments, user]);
   
-  const handleChange = useCallback((e) => {
+  const handleChange = (e) => {
     setMessage(e.target.value);
-  }, []);
+  };
 
   const handleSend = useCallback(async () => {
     if (!isAuthenticated) {
@@ -119,13 +119,9 @@ function MessageBoard({ isChatOpen, onToggleChat, postId, isAuthenticated, user,
   const canDeleteComment = useCallback((comment) => {
     if (!user || !isAuthenticated) return false;
     
-    // User can delete their own comments
-    const isOwner = user.id === comment.user?.id;
-    
-    // Admin can delete any comment
-    // Handle different role structures - your user.role might be an object or string
-    const userRole = typeof user.role === 'object' ? user.role?.role : user.role;
-    const isAdmin = userRole === 'ADMIN';
+    const role = user.role?.role; // 'USER' or 'ADMIN'
+    const isOwner = user.userId === comment.user?.id;
+    const isAdmin = role === 'ADMIN';
     
     return isOwner || isAdmin;
   }, [user, isAuthenticated]);
@@ -158,13 +154,11 @@ function MessageBoard({ isChatOpen, onToggleChat, postId, isAuthenticated, user,
                   <p className="username">{comment.user?.username || 'Anonymous'}</p>
                   <p className="message">{comment.content}</p>
                   {canDeleteComment(comment) && (
-                    <button
-                      className="delete-comment-btn"
-                      onClick={() => handleDeleteMessage(comment.id)}
-                      aria-label="Delete comment"
-                    >
-                      ❌
-                    </button>
+                    <Button className="delete-comment-btn" 
+                            onClick={() => handleDeleteMessage(comment.id)} 
+                            aria-label="Delete comment"
+                            text="x"
+                            />
                   )}
                 </div>
                 <div className="lower-part">

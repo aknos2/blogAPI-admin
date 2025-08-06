@@ -158,6 +158,22 @@
   pointer-events: auto;
 }
 
+.delete-comment-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translate(-40px, -5px);
+  font-size: 1rem;
+  background-color: #e2c7c5;
+  border: none;
+  cursor: pointer;
+}
+
 
 @media(min-width: 1290px) {
   .message-board-container {

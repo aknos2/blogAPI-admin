@@ -52,6 +52,9 @@ function LoginScreen({ onToggleLogin }) {
     // Update state
     setLoggedIn(false);
     
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new CustomEvent('authStateChange'));
+    
     // Navigate to home
     navigate('/');
     
@@ -69,13 +72,18 @@ function LoginScreen({ onToggleLogin }) {
       // Store tokens and user data
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("user", JSON.stringify(response.data.user));
-      localStorage.setItem("loginSuccess", true);
+      localStorage.setItem("loginSuccess", "true");
       
       // Update logged in state
       setLoggedIn(true);
       
-      // Close modal
+      // Close modal first
       onToggleLogin();
+      
+      // Small delay to ensure modal closes, then dispatch event
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('authStateChange'));
+      }, 100);
       
       console.log('Login successful:', response.data);
     } catch (err) {

@@ -179,6 +179,20 @@
   animation: heartBeat 0.3s ease-in-out;
 }
 
+.edit-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.edit-btn button {
+  background-color: #f8ff23;
+}
+
+.editing-tool {
+  position: fixed;
+  top: 0;
+  right: 0;
+}
 
 @keyframes heartBeat {
   0% { transform: scale(1); }
