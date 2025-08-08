@@ -14,7 +14,7 @@ export const deleteComment = (commentId) => api.delete(`/comments/${commentId}`)
 
 export const togglePostLike = (postId) => api.post(`/posts/${postId}/like`);
 
-export const editArticle = async (postId, pageId, data) => {
+export const editArticlePage = async (postId, pageId, data) => {
   try {
     const response = await api.put(`/posts/${postId}/pages/${pageId}`, data);
     return response;
@@ -23,3 +23,13 @@ export const editArticle = async (postId, pageId, data) => {
     throw error;
   }
 };
+
+export const editArticleMeta = async (postId, data) => {
+  try {
+    const res = await api.put(`/posts/${postId}/meta`, data);
+    return res;
+  } catch ( err ) {
+    console.error("API update post error", err );
+    throw err;
+  }
+}

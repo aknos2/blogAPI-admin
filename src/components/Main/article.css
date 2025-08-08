@@ -9,7 +9,6 @@
   margin: 2.3rem auto;
   position: relative;
   z-index: 0;
-  overflow: hidden;
   background-color: var(--article-bg-color);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   transform: translateY(-35px);
@@ -189,10 +188,38 @@
   background-color: #f8ff23;
 }
 
-.editing-tool {
+.editor-wrapper {
   position: fixed;
-  top: 0;
-  right: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 45rem;
+  z-index: 999;
+  background-color: rgb(44, 43, 43);
+  padding: 1rem;
+  color: white;
+  font-size: 1rem;
+  border-radius: 7px;
+}
+.editor-wrapper label{
+  color: white;
+  margin-right: -0.6rem;
+}
+.editor-wrapper input {
+  width: 100%;
+}
+.editor-wrapper-labels {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1rem;
+}
+.editor-wrapper-btns {
+  float: right;
+}
+.editor-wrapper-btns button{
+  margin-right: 0.5rem;
 }
 
 @keyframes heartBeat {
@@ -238,5 +265,8 @@
 
   .content-bottom {
     font-size: 1.3rem;
+  }
+  .editor-wrapper {
+    width: 55rem;
   }
 }

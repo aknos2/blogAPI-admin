@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
+import { useParams, useOutletContext } from 'react-router-dom'; // Add useOutletContext
 import { ArrowLeftIcon, ArrowRightIcon, ChatIcon, HeartIcon } from '../Icons';
 import Button from '../Button';
 import './article.css';
-import { editArticle, fetchPosts, togglePostLike } from '../../../api/posts';
-import { useParams } from 'react-router-dom';
+import { editArticleMeta, editArticlePage, fetchPosts, togglePostLike } from '../../../api/posts';
 import TinyMCEEditor from '../TinyMCE';
 import parse from 'html-react-parser';
 
-function Article({ onToggleChat, onPostChange, isAuthenticated, user}) {
+function Article({ onToggleChat, onPostChange }) { 
   const { articleId } = useParams();
+  
+  // Get auth data from outlet context instead of props
+  const { isAuthenticated, user, authLoading } = useOutletContext();
+  
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [isSliding, setIsSliding] = useState(false);
@@ -18,6 +22,21 @@ function Article({ onToggleChat, onPostChange, isAuthenticated, user}) {
   const [isLiking, setIsLiking] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [combinedContent, setCombinedContent] = useState('');
+  const [editedTitle, setEditedTitle] = useState('');
+  const [editedCreatedAt, setEditedCreatedAt] = useState('');
+  const [tagInput, setTagInput] = useState('');
+
+  // Fix the admin check
+  const isAdmin = isAuthenticated && user?.role?.role === 'ADMIN';
+
+  // Add debugging
+  useEffect(() => {
+    console.log('=== Article Auth Debug ===');
+    console.log('isAuthenticated:', isAuthenticated);
+    console.log('user:', user);
+    console.log('user?.role:', user?.role);
+    console.log('isAdmin:', isAdmin);
+  }, [isAuthenticated, user, isAdmin]);
 
   useEffect(() => {
     async function loadPosts() {
@@ -55,7 +74,7 @@ function Article({ onToggleChat, onPostChange, isAuthenticated, user}) {
   // Select article based on ID from URL, or default to latest
   const currentArticle = articleId 
     ? posts.find(post => post.id === articleId) 
-    : posts[posts.length - 1];
+    : posts[0];
 
   // Notify parent component when current article changes
   useEffect(() => {
@@ -117,81 +136,85 @@ function Article({ onToggleChat, onPostChange, isAuthenticated, user}) {
       }
   }, [isEditing, currentPageData]);
 
-  // Replace your handleSave function in Article.jsx with this improved version
+  useEffect(() => {
+    if (isEditing && currentArticle) {
+      setEditedTitle(currentArticle.title || '');
+      setEditedCreatedAt(currentArticle.createdAt?.slice(0, 10) || '');
+      setTagInput(currentArticle.tags?.map(tag => tag.name).join(', ') || '');
+    }
+  }, [isEditing, currentArticle]);
+
 
   const handleSave = async () => {
     try {
-      // Validate required data
-      if (!currentPageData || !currentPageData.id) {
-        throw new Error('Current page data is missing');
-      }
-      
-      if (!currentArticle || !currentArticle.id) {
-        throw new Error('Current article data is missing');
+      if (!currentArticle?.id || !currentPageData?.id) {
+        throw new Error("Missing article or page data");
       }
 
-      const pageId = currentPageData.id;
       const postId = currentArticle.id;
+      const pageId = currentPageData.id;
 
-      // Parse the HTML content
+      // 1. Parse TinyMCE content
       const parser = new DOMParser();
       const doc = parser.parseFromString(combinedContent, 'text/html');
 
       const newHeading = doc.querySelector('h2')?.innerHTML || '';
       const newSubtitle = doc.querySelector('h4')?.innerHTML || '';
-
-      // Get everything else after subtitle
       const paragraphs = [...doc.body.children].filter(
         (el) => !['H2', 'H4'].includes(el.tagName)
       );
       const newContent = paragraphs.map((el) => el.outerHTML).join('\n');
 
-      const updateData = {
-        heading: newHeading,
-        subtitle: newSubtitle,
-        content: newContent,
-      };
+      // 2. Prepare tag array
+      const tags = tagInput.split(',').map((tag) => tag.trim()).filter(Boolean);
 
-      // Make the API call
-      const response = await editArticle(postId, pageId, updateData);
-      
-      // Check if the response is successful
-      if (response && (response.status === 200 || response.data)) {
-        // Update the local state with new content
-        setPosts(prevPosts => 
-          prevPosts.map(post => {
-            if (post.id === postId) {
+      // 3. Call both API endpoints
+      await Promise.all([
+        editArticlePage(postId, pageId, {
+          heading: newHeading,
+          subtitle: newSubtitle,
+          content: newContent,
+        }),
+        editArticleMeta(postId, {
+          title: editedTitle,
+          createdAt: editedCreatedAt,
+          tags,
+        }),
+      ]);
+
+      // 4. Update local state
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post.id !== postId) return post;
+
+          return {
+            ...post,
+            title: editedTitle,
+            createdAt: editedCreatedAt,
+            tags: tags.map((name) => ({ name })), // match tag object shape
+            postPage: post.postPage.map((page) => {
+              if (page.id !== pageId) return page;
+
               return {
-                ...post,
-                postPage: post.postPage.map(page => {
-                  if (page.id === pageId) {
-                    return {
-                      ...page,
-                      heading: newHeading,
-                      subtitle: newSubtitle,
-                      content: newContent
-                    };
-                  }
-                  return page;
-                })
+                ...page,
+                heading: newHeading,
+                subtitle: newSubtitle,
+                content: newContent
               };
-            }
-            return post;
-          })
-        );
-        
-        setIsEditing(false);
-        console.log('Save successful!');
-      } else {
-        throw new Error('Unexpected response format');
-      }
-    } catch (error) {
-      console.error('Error saving article:', error);
+            })
+          };
+        })
+      );
+
+      setIsEditing(false);
+      console.log('Save complete!');
+    } catch (err) {
+      console.error('Failed to save article:', err);
     }
   };
 
-  // Show loading state
-  if (loading) return <div>Loading...</div>;
+  // Show loading state for both post loading and auth loading
+  if (loading || authLoading) return <div>Loading...</div>;
   
   // Handle case where article with specific ID is not found
   if (articleId && !currentArticle) {
@@ -203,7 +226,6 @@ function Article({ onToggleChat, onPostChange, isAuthenticated, user}) {
     return <div>No article content available.</div>;
   }
 
- 
   const isCurrentlyLiked = likedPosts.has(currentArticle.id);
   const likeCount = likeCounts[currentArticle.id] || 0;
 
@@ -225,9 +247,11 @@ function Article({ onToggleChat, onPostChange, isAuthenticated, user}) {
                   )) || []}
                 </div>
               </div>
-              <div className='edit-btn'>
-                <Button onClick={() => setIsEditing(true)} text="EDIT"/>
-              </div>
+              { isAdmin && (
+                <div className='edit-btn'>
+                  <Button onClick={() => setIsEditing(true)} text="EDIT"/>
+                </div>
+              )}
             </div>
 
             <div className={`page-content ${isSliding ? 'sliding' : ''}`}>
@@ -236,36 +260,53 @@ function Article({ onToggleChat, onPostChange, isAuthenticated, user}) {
                   {pageImage && (
                     <img 
                       src={pageImage.url} 
-                      alt={pageImage.altText || pageData.PageImage?.[0]?.caption || 'image'} 
+                      alt={pageImage.altText || pageImage.PageImage?.[0]?.caption || 'image'} 
                     />
                   )}
                 </div>
-                <div className="text-content">
-                  {isEditing ? (
-                    <div className='editing-tool'> 
-                      <TinyMCEEditor
-                        value={combinedContent}
-                        onEditorChange={(html) => setCombinedContent(html)}
-                      />
-                      <div style={{ marginTop: '10px' }}>
-                        <Button text="Save" onClick={handleSave} />
-                        <Button text="Cancel" onClick={() => setIsEditing(false)} />
-                      </div>
-                    </div>
-                  ) : (
+               <div className="text-content">
+                  {!isEditing && (
                     <>
                       {parse(pageData.heading || '')}
-                      <div>
-                        {parse(pageData.subtitle || '')}  
-                      </div>
-                      <div className="article-content">
-                        {parse(pageData.content || '')}
-                      </div>
+                      <div>{parse(pageData.subtitle || '')}</div>
+                      <div className="article-content">{parse(pageData.content || '')}</div>
                     </>
                   )}
                 </div>
               </div>
             </div>
+
+            {isEditing && (
+              <div className="editor-wrapper">
+                <TinyMCEEditor
+                  value={combinedContent}
+                  onEditorChange={(html) => setCombinedContent(html)}
+                />
+                <div className='editor-wrapper-labels'>
+                  <label>Title:</label>
+                  <input type="text"
+                        value={editedTitle}
+                        onChange={(e) => setEditedTitle(e.target.value)}
+                        placeholder='Post title'   
+                        />
+                  <label>Date:</label>
+                  <input type="date"
+                        value={editedCreatedAt}
+                        onChange={(e) => setEditedCreatedAt(e.target.value)}
+                        />
+                  <label>Tags:</label>
+                  <input type="text"
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        placeholder='omma-separated, e.g. activities, friends, city' 
+                        />
+                </div>
+                <div className="editor-wrapper-btns" style={{ marginTop: '10px' }}>
+                  <Button text="Save" onClick={handleSave} />
+                  <Button text="Cancel" onClick={() => setIsEditing(false)} />
+                </div>
+              </div>
+            )}
           </>
         );
 
@@ -280,32 +321,32 @@ function Article({ onToggleChat, onPostChange, isAuthenticated, user}) {
                   />
                 )}
             </div>
-            <div className="text-content">
-              {isEditing ? (
-                    <div className='editing-tool'> 
-                      <TinyMCEEditor
-                        value={combinedContent}
-                        onEditorChange={(html) => setCombinedContent(html)}
-                      />
-                      <div style={{ marginTop: '10px' }}>
-                        <Button text="Save" onClick={handleSave} />
-                        <Button text="Cancel" onClick={() => setIsEditing(false)} />
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <div>
-                        {parse(pageData.subtitle || '')}  
-                      </div>
-                      <div className="article-content">
-                        {parse(pageData.content || '')}
-                      </div>
-                    </>
-                  )}
-            </div>
+              {!isEditing && (
+                 <div className="text-content">
+                     {parse(pageData.subtitle || '')}  
+                   <div className="article-content">
+                     {parse(pageData.content || '')}
+                   </div>
+                </div>
+              )}
+              { isAdmin && (
                  <div className='edit-btn'>
                   <Button onClick={() => setIsEditing(true)} text="EDIT"/>
                 </div>
+              )}
+
+              {isEditing && (
+                  <div className="editor-wrapper">
+                    <TinyMCEEditor
+                      value={combinedContent}
+                      onEditorChange={(html) => setCombinedContent(html)}
+                    />
+                    <div className="editor-wrapper-btns" style={{ marginTop: '10px' }}>
+                      <Button text="Save" onClick={handleSave} />
+                      <Button text="Cancel" onClick={() => setIsEditing(false)} />
+                    </div>
+                  </div>
+                )}
           </div>
         );
       default:
@@ -313,7 +354,6 @@ function Article({ onToggleChat, onPostChange, isAuthenticated, user}) {
     }
   };
   
-
   const goToNextPage = () => {
     if (currentPage < totalPages - 1) {
       setIsSliding(true);

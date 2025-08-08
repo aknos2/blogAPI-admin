@@ -80,10 +80,7 @@ function LoginScreen({ onToggleLogin }) {
       // Close modal first
       onToggleLogin();
       
-      // Small delay to ensure modal closes, then dispatch event
-      setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('authStateChange'));
-      }, 100);
+      window.dispatchEvent(new CustomEvent('authStateChange'));
       
       console.log('Login successful:', response.data);
     } catch (err) {
