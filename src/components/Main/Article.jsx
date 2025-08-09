@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
-import { useParams, useOutletContext } from 'react-router-dom'; // Add useOutletContext
+import { useNavigate, useParams } from 'react-router-dom'; // Add useOutletContext
 import { ArrowLeftIcon, ArrowRightIcon, ChatIcon, HeartIcon } from '../Icons';
 import Button from '../Button';
 import './article.css';
-import { editArticleMeta, editArticlePage, fetchPosts, togglePostLike } from '../../../api/posts';
+import { editArticleMeta, editArticlePage, fetchPosts, togglePostLike, togglePostPublication } from '../../../api/posts';
 import TinyMCEEditor from '../TinyMCE';
 import parse from 'html-react-parser';
+import { useAuth } from '../../context/useAuthContext';
 
 function Article({ onToggleChat, onPostChange }) { 
   const { articleId } = useParams();
-  
-  // Get auth data from outlet context instead of props
-  const { isAuthenticated, user, authLoading } = useOutletContext();
+
+  const { isAuthenticated, user, authLoading } = useAuth();
+  const navigate = useNavigate();
   
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -25,6 +26,8 @@ function Article({ onToggleChat, onPostChange }) {
   const [editedTitle, setEditedTitle] = useState('');
   const [editedCreatedAt, setEditedCreatedAt] = useState('');
   const [tagInput, setTagInput] = useState('');
+  const [loginMessage, setLoginMessage] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
 
   // Fix the admin check
   const isAdmin = isAuthenticated && user?.role?.role === 'ADMIN';
@@ -41,7 +44,7 @@ function Article({ onToggleChat, onPostChange }) {
   useEffect(() => {
     async function loadPosts() {
       try {
-        const res = await fetchPosts();
+        const res = await fetchPosts(); // backend decides what to send
         setPosts(res.data);
         
         // Initialize like counts and user's liked posts
@@ -69,12 +72,10 @@ function Article({ onToggleChat, onPostChange }) {
       }
     }
     loadPosts();
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, isAdmin]);
 
   // Select article based on ID from URL, or default to latest
-  const currentArticle = articleId 
-    ? posts.find(post => post.id === articleId) 
-    : posts[0];
+  const currentArticle = posts?.find(post => post.id === articleId) || posts?.[0] || null;
 
   // Notify parent component when current article changes
   useEffect(() => {
@@ -84,7 +85,14 @@ function Article({ onToggleChat, onPostChange }) {
   }, [currentArticle, onPostChange]);
 
   const handleLike = async () => {
-    if (!isAuthenticated) return; 
+    if (!isAuthenticated) {
+      setLoginMessage(true);
+      setTimeout(() => {
+        setLoginMessage(false)
+      }, 3000)
+      return;
+    }; 
+  
     if (!currentArticle || isLiking) return;
 
     setIsLiking(true);
@@ -115,6 +123,39 @@ function Article({ onToggleChat, onPostChange }) {
       console.error('Failed to update like:', err);
     } finally {
       setIsLiking(false);
+    }
+  };
+
+  const handlePostPublication = async () => {
+      if (!isAuthenticated) {
+        setLoginMessage(true);
+        setTimeout(() => {
+          setLoginMessage(false)
+        }, 3000)
+        return;
+      }; 
+
+    if (!currentArticle || isPublishing) return;
+
+    setIsPublishing(true);
+    setLoading(true);
+    const postId = currentArticle.id;
+
+    try {
+      const response = await togglePostPublication(postId);
+      const { published } = response.data;
+
+      setPosts(prevPosts => {
+        prevPosts.map(post => {
+          post.id === postId ? {...post, published } : post
+        })
+      })
+    } catch (err) {
+      console.error("Failed to handle publication", err);
+    } finally {
+      setIsPublishing(false);
+      setLoading(false);
+      navigate('/library');
     }
   };
 
@@ -214,7 +255,7 @@ function Article({ onToggleChat, onPostChange }) {
   };
 
   // Show loading state for both post loading and auth loading
-  if (loading || authLoading) return <div>Loading...</div>;
+  if (loading || authLoading || !posts) return <div>Loading...</div>;
   
   // Handle case where article with specific ID is not found
   if (articleId && !currentArticle) {
@@ -383,9 +424,14 @@ function Article({ onToggleChat, onPostChange }) {
           <span>Page {currentPage + 1} of {totalPages}</span>
         </div>
 
-        <div className='publish-btn'>
-          <Button text="PUBLISH"/>
-        </div>
+        {isAdmin && (
+          <div className='publish-btn'>
+            <Button text={currentArticle?.published ? 'UNPUBLISH' : 'PUBLISH'} 
+                    onClick={handlePostPublication}
+                    disabled={isPublishing}
+                    />
+          </div>
+        )}
 
         <div className='right-wrap no-select'>
           <div className='like-section'>
