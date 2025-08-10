@@ -189,7 +189,7 @@
     transform: translateX(150%);
   }
   .slide-in-chat {
-    transform: translateX(10%);
+    transform: translateX(-5%);
     opacity: 1;
   }
 }

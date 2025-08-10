@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'; // Add useOutletConte
 import { ArrowLeftIcon, ArrowRightIcon, ChatIcon, HeartIcon } from '../Icons';
 import Button from '../Button';
 import './article.css';
-import { editArticleMeta, editArticlePage, fetchPosts, togglePostLike, togglePostPublication } from '../../../api/posts';
+import { editArticleMeta, editArticlePage, fetchPosts, togglePostLike, togglePostPublication, updatePageImage, updatePostThumbnail } from '../../../api/posts';
 import TinyMCEEditor from '../TinyMCE';
 import parse from 'html-react-parser';
 import { useAuth } from '../../context/useAuthContext';
@@ -28,6 +28,8 @@ function Article({ onToggleChat, onPostChange }) {
   const [tagInput, setTagInput] = useState('');
   const [loginMessage, setLoginMessage] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [newThumbnail, setNewThumbnail] = useState('');
+  const [newPageImage, setNewPageImage] = useState('');
 
   // Fix the admin check
   const isAdmin = isAuthenticated && user?.role?.role === 'ADMIN';
@@ -186,7 +188,7 @@ function Article({ onToggleChat, onPostChange }) {
   }, [isEditing, currentArticle]);
 
 
-  const handleSave = async () => {
+ const handleSave = async () => {
     try {
       if (!currentArticle?.id || !currentPageData?.id) {
         throw new Error("Missing article or page data");
@@ -194,11 +196,26 @@ function Article({ onToggleChat, onPostChange }) {
 
       const postId = currentArticle.id;
       const pageId = currentPageData.id;
+      const pageImageId = currentPageData.PageImage?.[0]?.id;
 
-      // 1. Parse TinyMCE content
+      let newThumbnailUrl = null;
+      let newPageImageUrl = null;
+
+      // 1️⃣ Upload thumbnail first if selected
+      if (newThumbnail) {
+        const res = await updatePostThumbnail(postId, newThumbnail);
+        newThumbnailUrl = res.data.thumbnail?.url || res.data.thumbnail; // adjust based on backend return
+      }
+
+      // 2️⃣ Upload page image if selected
+      if (newPageImage && pageImageId) {
+        const res = await updatePageImage(pageImageId, newPageImage);
+        newPageImageUrl = res.data.image?.url || res.data.image; // adjust based on backend return
+      }
+
+      // 3️⃣ Parse TinyMCE content
       const parser = new DOMParser();
       const doc = parser.parseFromString(combinedContent, 'text/html');
-
       const newHeading = doc.querySelector('h2')?.innerHTML || '';
       const newSubtitle = doc.querySelector('h4')?.innerHTML || '';
       const paragraphs = [...doc.body.children].filter(
@@ -206,10 +223,10 @@ function Article({ onToggleChat, onPostChange }) {
       );
       const newContent = paragraphs.map((el) => el.outerHTML).join('\n');
 
-      // 2. Prepare tag array
+      // 4️⃣ Prepare tag array
       const tags = tagInput.split(',').map((tag) => tag.trim()).filter(Boolean);
 
-      // 3. Call both API endpoints
+      // 5️⃣ Update text/meta content
       await Promise.all([
         editArticlePage(postId, pageId, {
           heading: newHeading,
@@ -223,16 +240,19 @@ function Article({ onToggleChat, onPostChange }) {
         }),
       ]);
 
-      // 4. Update local state
+      // 6️⃣ Update local state immediately with new images + text
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post.id !== postId) return post;
 
-          return {
+          const updatedPost = {
             ...post,
             title: editedTitle,
             createdAt: editedCreatedAt,
-            tags: tags.map((name) => ({ name })), // match tag object shape
+            tags: tags.map((name) => ({ name })),
+            thumbnail: newThumbnailUrl
+              ? { ...post.thumbnail, url: newThumbnailUrl }
+              : post.thumbnail,
             postPage: post.postPage.map((page) => {
               if (page.id !== pageId) return page;
 
@@ -240,10 +260,16 @@ function Article({ onToggleChat, onPostChange }) {
                 ...page,
                 heading: newHeading,
                 subtitle: newSubtitle,
-                content: newContent
+                content: newContent,
+                PageImage:
+                  newPageImageUrl && page.PageImage?.[0]
+                    ? [{ ...page.PageImage[0], image: { url: newPageImageUrl } }]
+                    : page.PageImage
               };
-            })
+            }),
           };
+
+          return updatedPost;
         })
       );
 
@@ -253,6 +279,7 @@ function Article({ onToggleChat, onPostChange }) {
       console.error('Failed to save article:', err);
     }
   };
+
 
   // Show loading state for both post loading and auth loading
   if (loading || authLoading || !posts) return <div>Loading...</div>;
@@ -277,7 +304,7 @@ function Article({ onToggleChat, onPostChange }) {
     switch (pageData.layout) {
       case "titlePage":
         return (
-          <>
+          <div className='title-container'>
             <div className="title">
               <h2>{currentArticle.title}</h2>
               <div className='sub-title'>
@@ -298,10 +325,10 @@ function Article({ onToggleChat, onPostChange }) {
             <div className={`page-content ${isSliding ? 'sliding' : ''}`}>
               <div className="content-grid-titlePage">
                 <div className="img-content no-select">
-                  {pageImage && (
+                 {currentArticle.thumbnail?.url && (
                     <img 
-                      src={pageImage.url} 
-                      alt={pageImage.altText || pageImage.PageImage?.[0]?.caption || 'image'} 
+                      src={currentArticle.thumbnail.url} 
+                      alt="Post thumbnail" 
                     />
                   )}
                 </div>
@@ -343,12 +370,14 @@ function Article({ onToggleChat, onPostChange }) {
                         />
                 </div>
                 <div className="editor-wrapper-btns" style={{ marginTop: '10px' }}>
+                  <label>Thumbnail:</label>
+                  <input type="file" accept="image/*" onChange={(e) => setNewThumbnail(e.target.files[0])} />
                   <Button text="Save" onClick={handleSave} />
                   <Button text="Cancel" onClick={() => setIsEditing(false)} />
                 </div>
               </div>
             )}
-          </>
+          </div>
         );
 
       case "horizontalImage":
@@ -382,7 +411,11 @@ function Article({ onToggleChat, onPostChange }) {
                       value={combinedContent}
                       onEditorChange={(html) => setCombinedContent(html)}
                     />
-                    <div className="editor-wrapper-btns" style={{ marginTop: '10px' }}>
+                    <div className='page-img-upload'>
+                      <label>Page Image:</label>
+                      <input type="file" accept="image/*" onChange={(e) => setNewPageImage(e.target.files[0])} />
+                    </div>
+                    <div className="editor-wrapper-btns-float" style={{ marginTop: '10px' }}>
                       <Button text="Save" onClick={handleSave} />
                       <Button text="Cancel" onClick={() => setIsEditing(false)} />
                     </div>
@@ -417,7 +450,7 @@ function Article({ onToggleChat, onPostChange }) {
 
   return (
     <div className={`article-container page-content ${isSliding ? 'sliding' : ''}`}>
-      {renderLayout(currentPageData)}
+      {renderLayout(totalPages > 0 ? currentPageData : currentArticle)}
 
       <div className='content-bottom'>
         <div className='page-indicator'>

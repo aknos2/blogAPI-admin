@@ -114,7 +114,7 @@
 
 @media(min-width: 1290px) {
   .side-menu {
-    top: calc((100vh - 80vh));
+    top: calc((20vh + 1.5rem));
     width: 20rem;
     font-size: 2rem;
   }

@@ -33,3 +33,21 @@ export const editArticleMeta = async (postId, data) => {
     throw err;
   }
 }
+
+export const updatePostThumbnail = (postId, file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return api.put(`/posts/${postId}/thumbnail`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
+
+export const updatePageImage = (pageImageId, file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return api.put(`/posts/page-images/${pageImageId}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
