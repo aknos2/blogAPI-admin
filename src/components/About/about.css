@@ -7,10 +7,12 @@
   width: fit-content;
   margin: 0 auto;
   border-top: none;
+  background-color: var(--photo-container-color);
 }
 .about-container h1 {
   text-align: center;
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid var(--text-color);
+  color: var(--text-color);
 }
 
 .profile-img img{
@@ -63,7 +65,7 @@
   margin-top: 2rem;
   font-weight: 500;
   text-align: center;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid var(--text-color);
 }
 .credits-link:hover {
   cursor: pointer;
@@ -77,14 +79,22 @@
   align-items: center;
   gap: 1rem;
   margin-top: 2rem;
-  border: 1px solid black;
+  border: 1px solid var(--container-border);
   width: fit-content;
   margin: 0 auto;
   padding: 2rem;
   border-top: none;
+  background-color: var(--photo-container-color);
+  overflow: auto;
+}
+.credits-container h1{
+  color: var(--text-color);
+}
+.credits-container li{
+  color: var(--text-color);
 }
 .credits-container a{
-  color: rgb(16, 16, 236);
+  color: var(--credits-links-color);
 }
 .credits-container h3 a{
   color: black;
@@ -101,6 +111,9 @@
   align-items: center;
   float: right;
   margin-top: 1rem;
+}
+.credits-back-btn-wrap svg{
+  fill: var(--text-color);
 }
 .credits-back-btn-wrap:hover {
   cursor: pointer;

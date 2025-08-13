@@ -11,6 +11,7 @@ import Credits from './components/About/Credits.jsx';
 import MainContent from './components/Main/MainContent.jsx';
 import SignUp from './components/Login-Subscribe/Signup.jsx';
 import { AuthProvider } from './context/AuthContext.jsx'; // ✅ import
+import CreatePostForm from './components/Create/CreatePostForm.jsx';
 
 const router = createBrowserRouter([
   {
@@ -22,7 +23,8 @@ const router = createBrowserRouter([
       { path: "post/:articleId", element: <MainContent /> },
       { path: "about", element: <About /> },
       { path: "credits", element: <Credits /> },
-      { path: "signup", element: <SignUp /> }
+      { path: "signup", element: <SignUp /> },
+      { path: "create", element: <CreatePostForm />}
     ]
   },
 ]);

@@ -3,7 +3,7 @@
   flex-direction: column;
   padding: 1rem 0;
   gap: 1.2rem;
-  background-color: var(--messageBoard-bg-color);
+  background-color: var(--messageBoard-background);
   border: 1.5px solid var(--messageBoard-border);
   border-top: none;
   border-radius: 0 0 0.75rem 0.75rem;

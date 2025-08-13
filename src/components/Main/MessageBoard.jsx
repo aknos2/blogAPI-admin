@@ -142,7 +142,7 @@ function MessageBoard({ isChatOpen, onToggleChat, postId }) {
         ) : (
           comments.map((comment) => (
             <div key={comment.id} className="message-wrap">
-              <img src={profileImg} alt="user icon" className="no-select" />
+              <img src={comment.user?.avatar} alt="user icon" className="no-select" />
               <div>
                 <div className="upper-part">
                   <p className="username">{comment.user?.username || 'Anonymous'}</p>

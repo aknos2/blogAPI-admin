@@ -1,6 +1,7 @@
 .article-container {
   display: flex;
   flex-direction: column;
+  justify-content: space-between; /* Push last child to bottom */
   gap: 2rem;
   padding: 2rem;
   border: 1px solid var(--container-border);
@@ -22,6 +23,7 @@
 }
 
 .page-content {
+  flex: 1;
   transition: opacity 0.3s ease-in-out;
   height: 100%;
 }
@@ -32,10 +34,10 @@
 .content-grid-titlePage {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  min-height: 20rem;
+  min-height: 22rem;
   gap: 2rem;
   height: 100%;
-  margin-top: 2rem;
+  padding: 0.5rem 0;
 }
 .content-grid-horizontalImage {
   display: grid;
@@ -51,8 +53,7 @@
 }
 .img-content img {
   width: 100%;
-  height: auto;
-  max-height: 100%;
+  height: 100%;
   object-fit: cover;
   border-radius: 8px;
   display: block;
@@ -67,6 +68,9 @@
 }
 .content-grid-titlePage .text-content{
   padding: 1rem 0;
+}
+.content-grid-titlePage .img-content{
+  margin-top: 1rem;
 }
 
 .title h2 {
@@ -106,6 +110,7 @@
   font-size: 1.2rem;
   padding: 0 2rem;
   z-index: 10;
+  margin-top: auto; /* Pushes this to bottom */
 }
 .right-wrap {
   display: flex;
@@ -196,6 +201,15 @@
   background-color: #f8ff23;
 }
 
+.delete-post-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.delete-post-btn button {
+  background-color: #ff0000cb;
+}
+
 .editor-wrapper {
   position: fixed;
   top: 50%;
@@ -269,23 +283,35 @@
 
 @media(min-width: 1290px) {
   .article-container {
-    width: 55rem;
+    width: 60vw;
     margin: 2.2rem auto;
     height: 75vh;
   }
+
+  .content-grid-titlePage .img-content{
+    margin-top: 0;
+  }
+
   .content-grid-titlePage {
-    margin: 0; 
+    flex: 1; /* fill available vertical space */
+    gap: 2rem;
+    margin-top: 2rem;
+    max-height: 10rem;
+  } 
+
+  .content-grid-horizontalImage {
+    grid-template-rows: 25rem 10rem 1rem; /* image:content */
+    gap: 2rem;
+  }
+
+  .page-content {
+    font-size: 2rem;
   }
 
   .content-bottom {
     font-size: 1.3rem;
-    margin-top: -0.7rem;
   }
 
-  .title {
-    margin-top: -1rem;
-    margin-bottom: 1rem;
-  }
   .editor-wrapper {
     width: 55rem;
   }

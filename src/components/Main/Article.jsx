@@ -3,10 +3,11 @@ import { useNavigate, useParams } from 'react-router-dom'; // Add useOutletConte
 import { ArrowLeftIcon, ArrowRightIcon, ChatIcon, HeartIcon } from '../Icons';
 import Button from '../Button';
 import './article.css';
-import { editArticleMeta, editArticlePage, fetchPosts, togglePostLike, togglePostPublication, updatePageImage, updatePostThumbnail } from '../../../api/posts';
+import { deletePost, editArticleMeta, editArticlePage, fetchPosts, togglePostLike, togglePostPublication, updatePageImage, updatePostThumbnail } from '../../../api/posts';
 import TinyMCEEditor from '../TinyMCE';
 import parse from 'html-react-parser';
 import { useAuth } from '../../context/useAuthContext';
+import ResponsiveImage from '../ResponsiveImage';
 
 function Article({ onToggleChat, onPostChange }) { 
   const { articleId } = useParams();
@@ -160,6 +161,26 @@ function Article({ onToggleChat, onPostChange }) {
       navigate('/library');
     }
   };
+
+  const handleDeletePost = async (postId) => {
+    if (!currentArticle) return;
+
+    const confirmed = window.confirm("Are you sure you want to delete this post?");
+    if (!confirmed) return;
+    
+    setLoading(true);
+
+    postId = currentArticle.id;
+
+    try {
+      await deletePost(postId)
+      navigate('/library');
+    } catch (err) {
+      console.error("Failed to delete post", err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const totalPages = currentArticle?.postPage.length;
   const currentPageData = currentArticle?.postPage[currentPage];
@@ -316,9 +337,14 @@ function Article({ onToggleChat, onPostChange }) {
                 </div>
               </div>
               { isAdmin && (
-                <div className='edit-btn'>
-                  <Button onClick={() => setIsEditing(true)} text="EDIT"/>
-                </div>
+                <>
+                  <div className='edit-btn'>
+                    <Button onClick={() => setIsEditing(true)} text="EDIT"/>
+                  </div>
+                  <div className='delete-post-btn'>
+                    <Button onClick={handleDeletePost} text="DELETE"/>
+                  </div>
+                </>
               )}
             </div>
 
@@ -326,9 +352,11 @@ function Article({ onToggleChat, onPostChange }) {
               <div className="content-grid-titlePage">
                 <div className="img-content no-select">
                  {currentArticle.thumbnail?.url && (
-                    <img 
-                      src={currentArticle.thumbnail.url} 
-                      alt="Post thumbnail" 
+                     <ResponsiveImage
+                      url={currentArticle.thumbnail.url}
+                      alt="Post thumbnail"
+                      widths={[400, 800, 1200]}
+                      sizes="(max-width: 768px) 400px, (max-width: 1200px) 800px, 1200px, (min-width: 1290px) 800px, 1200px"
                     />
                   )}
                 </div>
@@ -385,9 +413,11 @@ function Article({ onToggleChat, onPostChange }) {
           <div className="content-grid-horizontalImage">
             <div className="img-content no-select">
                {pageImage && (
-                  <img 
-                    src={pageImage.url} 
-                    alt={pageImage.altText || pageData.PageImage?.[0]?.caption || 'image'} 
+                  <ResponsiveImage
+                    url={pageImage.url}
+                    alt={pageImage.altText || pageData.PageImage?.[0]?.caption || 'image'}
+                    widths={[600, 1200, 1600]}
+                    sizes="(max-width: 768px) 600px, (max-width: 1440px) 1200px, 1000px"
                   />
                 )}
             </div>
@@ -400,9 +430,14 @@ function Article({ onToggleChat, onPostChange }) {
                 </div>
               )}
               { isAdmin && (
-                 <div className='edit-btn'>
-                  <Button onClick={() => setIsEditing(true)} text="EDIT"/>
-                </div>
+                <>
+                  <div className='edit-btn'>
+                    <Button onClick={() => setIsEditing(true)} text="EDIT"/>
+                  </div>
+                  <div className='delete-post-btn'>
+                      <Button onClick={handleDeletePost} text="DELETE"/>
+                  </div>
+                </>
               )}
 
               {isEditing && (

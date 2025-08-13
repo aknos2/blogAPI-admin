@@ -58,6 +58,7 @@ function Header({ onMenuToggle, menuBtnRef}) {
             </li>
           </div>
           <div className="right-side-nav">
+            <Link to="create"><li className='nav-links'>Create Post</li></Link>
             <Link to="library"><li className='nav-links'>Articles</li></Link>
             <Link to="about"><li className='nav-links'>About</li></Link>
           </div>

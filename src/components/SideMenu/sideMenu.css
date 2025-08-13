@@ -1,17 +1,18 @@
 .side-menu {
   position: fixed;
-  top: calc((100vh - 75vh) - 0.3rem);
+  top: calc(25vh - 5px);
   left: 0;
   transform: translateX(-100%);
-  background-color: white;
+  background-color: var(--sidemenu-outer-bg-color);
   box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-  border: 1px solid #ccc;
+  border: 1px solid var(--sidemenu-outer-border);
   border-left: none;
   padding: 1rem;
   border-radius: 0 0 6px 0;
   transition: transform 0.3s ease-in-out, opacity 0.3s ease;
   margin-top: 0.2rem;
   z-index: 99;
+  width: 20%;
 }
 .menu-toggle-btn {
   padding: 0 1rem;
@@ -28,6 +29,7 @@
   background-color: transparent;
   border: none;
   cursor: pointer;
+  color: var(--sidemenu-nav-text-color);
 }
 .nav-links button:hover {
   color: orange;
@@ -49,8 +51,8 @@
 .profile {
   text-align: center;
   padding: 2rem 1rem;
-  background: linear-gradient(to bottom right, #fddf89, #e7b663);
-  border-radius: 1rem;
+  background: var(--sidemenu-profile-bg-color);
+  border-radius: 1rem 1rem 0 0;
 }
 
 .profile-demo {
@@ -72,7 +74,7 @@
   top: 25%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(255, 166, 0, 0.842);
+  background-color: var(--sidemenu-subscribe-message-bg-color);
   width: 14rem;
   font-size: 1.3rem;
   border: 1px solid black;
@@ -108,14 +110,25 @@
 .stats p:last-child {
   padding-right: 1.5rem;
 }
+
+.categories-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1rem;
+  background-color: var(--sidemenu-nav-bg-color);
+  border-radius: 0 0 1rem 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
 .not-used {
   opacity: 0.3;
 }
 
 @media(min-width: 1290px) {
   .side-menu {
-    top: calc((20vh + 1.5rem));
-    width: 20rem;
+    top: calc((19vh - 5px));
     font-size: 2rem;
+    width: 18%;
   }
 }

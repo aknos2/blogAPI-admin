@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './sideMenu.css'
 import profileImg from '/assets/corgi/profile/white-cat-icon.png'
 import Button from '../Button';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { logoutAccount } from '../../../api/auth';
 import { fetchUserStats } from '../../../api/user';
 
@@ -94,7 +94,7 @@ function SideMenu({isOpen, onToggleLogin, onMenuToggle}) {
         {loggedIn ? (
           <div className="profile">
             <h3 className="username">{userStats.username || 'User'}</h3>
-            <img src={profileImg} alt="User avatar" />
+            <img src={userStats.avatar} alt="User avatar" />
             <div className="stats">
               <p>{userStats.comments} Comment{userStats.comments !== 1 ? 's' : ''}</p>
               <p>{userStats.likes} Liked{userStats.likes !== 1 ? 's' : ''}</p>
@@ -120,15 +120,23 @@ function SideMenu({isOpen, onToggleLogin, onMenuToggle}) {
             <p className='not-used'>Create post</p>
             <p className='not-used'>My posts</p>
             {loggedIn ? (
-              <Button 
-                onClick={handleLogout} 
-                className="logout-btn" 
-                text={loading ? "Logging out..." : "Log out"}
-                disabled={loading}
-              />
+              <>
+                <Button 
+                  onClick={handleLogout} 
+                  className="logout-btn" 
+                  text={loading ? "Logging out..." : "Log out"}
+                  disabled={loading}
+                />
+                <Link to="/signup">
+                    <Button className='login-btn' text="Sign up"/>
+                </Link>
+              </>
             ) : (
               <>
                 <Button onClick={onToggleLogin} className='login-btn' text="Login"/>
+                <Link to="/signup">
+                  <Button className='login-btn' text="Sign up"/>
+                </Link>
               </>
             )}
           </nav>

@@ -13,15 +13,102 @@
 .signup-container {
   border: 1px solid black;
   border-top: none;
-  width: 25rem;
-  padding: 2rem;
+  width: 50rem;
+  padding: 2rem 0.5rem ;
   margin: 0 auto;
-  background-color: white;
+  background-color: var(--container-color);
+  overflow-y: auto;
 }
 .signup-container h1 {
   text-align: center;
   font-size: 2rem;
 }
+.signup-container-content {
+  display: flex;
+  justify-content: space-around;
+}
+
+.create-account-info {
+  border-left: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 80%;
+  padding: 1rem; 
+}
+
+.create-account-avatar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%; 
+}
+.avatar-wrap {
+  flex: 1;
+}
+.avatar-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+}
+.avatar-btn {
+  border-radius: 50%;
+  overflow: hidden;
+  width: 7rem;
+  height: 7rem;
+  padding: 0;
+  margin: 0;
+  display: flex;  
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-color) !important;
+  border: none;
+}
+.avatar-btn:hover {
+  background-color: rgb(255, 225, 0) !important;
+  border: 2px solid rgb(255, 225, 0);
+}
+.avatar-imgs:hover {
+  background-color: rgb(255, 225, 0) !important;
+  border: 2px solid rgb(255, 225, 0);
+  filter: brightness(100%)
+}
+.selected {
+  background-color: rgb(94, 255, 0) !important;
+  border: 2px solid rgb(28, 28, 32);
+  filter: brightness(110%);
+  transform: scale(120%);
+  box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, 0.416);
+}
+.avatar-imgs{
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  filter: brightness(90%);
+}
+.img-avatar-1, .img-avatar-2, .img-avatar-5  {
+  object-position: 50% 50%;
+}
+.img-avatar-4 {
+  width: 150%;
+  height: 150%;
+  object-position: 50% -1rem;
+}
+.img-avatar-7 {
+  width: 120%;
+  height: 120%;
+  object-position: 50% 50%s;
+}
+.img-avatar-8 {
+  width: 120%;
+  height: 120%;
+  object-position: 50% 50%;
+}
+
 
 .login-container {
   position: absolute;
@@ -121,7 +208,11 @@
 .error-message, .error-messages {
   color: red;
   margin-bottom: 10px;
-  font-size: 1rem;
+  font-size: 1.2rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left; 
+  max-width: 80%;
 }
 
 .success-message {
@@ -174,5 +265,11 @@
   }
   to {
     width: 100%;
+  }
+}
+
+@media(min-width: 1290px) {
+  .signup-container {
+    width: 60vw;
   }
 }
