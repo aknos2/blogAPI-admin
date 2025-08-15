@@ -9,6 +9,7 @@ import SelectedFilters from './SelectedFilters';
 import { fetchPosts } from '../../../api/posts';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuthContext'; // Add this import
+import LoadingSpinner from '../LoadingAnimation/loadingSpinner';
 
 function Library() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ function Library() {
   const [showUnpublished, setShowUnpublished] = useState(false);
   
   // Check if user is admin
-  const isAdmin = isAuthenticated && user?.role?.role === 'ADMIN';
+  const isAdmin = isAuthenticated && user?.role === 'ADMIN';
   
   // Get latest dates from current articles
   const { latestYear, latestMonth } = getLatestDates(articles);
@@ -57,7 +58,7 @@ function Library() {
   }, []); 
 
   // Show loading state
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className='library-loading'><LoadingSpinner /></div>;
   
   // Show no posts message if empty
   if (!articles || articles.length === 0) {
@@ -191,18 +192,20 @@ function Library() {
                       <p>{article.comments?.length || 0}</p>
                     </div>
                   </div>
-            
-                  <SelectedFilters
-                    className="month-title"
-                    selectedYear={selectedYear}
-                    setSelectedYear={setSelectedYear}
-                    selectedMonth={selectedMonth}
-                    setSelectedMonth={setSelectedMonth}
-                    selectedTags={selectedTags}
-                    setSelectedTags={setSelectedTags}
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                  />
+
+                { index === 0  && (
+                    <SelectedFilters
+                      className="selected-filters-container"
+                      selectedYear={selectedYear}
+                      setSelectedYear={setSelectedYear}
+                      selectedMonth={selectedMonth}
+                      setSelectedMonth={setSelectedMonth}
+                      selectedTags={selectedTags}
+                      setSelectedTags={setSelectedTags}
+                      searchQuery={searchQuery}
+                      setSearchQuery={setSearchQuery}
+                    />
+                )}
                 </figcaption>
               </figure>
             ))

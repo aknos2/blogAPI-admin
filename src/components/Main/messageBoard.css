@@ -50,6 +50,7 @@
   object-fit: cover;
   border-radius: 50%;
   border: 1px solid var(--messageBoard-avatar-border);
+  background-color: var(--chat-profile-bg-color);
 }
 
 .upper-part {
@@ -64,7 +65,7 @@
 }
 
 .message {
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: var(--messageBoard-message)
 }
 

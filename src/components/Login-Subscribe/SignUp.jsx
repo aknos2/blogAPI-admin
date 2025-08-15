@@ -108,7 +108,7 @@ function SignUp() {
           {success && <div className="success-message">{success}</div>}
 
           <div className="signup-container-content">
-            <div className='create-account-avatar'>
+            <div className='create-account-avatar no-select'>
               <h1>Let's avatar choose</h1>
               <div className='avatar-wrap'>
                 {avatars.map((avatar)=> (

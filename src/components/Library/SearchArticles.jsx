@@ -74,7 +74,7 @@ function SearchDate({ onMonthSelect, selectedYear, selectedMonth }) {
     articles.map(article => new Date(article.createdAt).getFullYear())
   )].sort((a, b) => b - a); // Sort years descending (newest first)
 
-  if (loading) return <div>Loading dates...</div>;
+  if (loading) return <div className="loading-dates">loading dates...</div>;
 
   return (
     <div className="search-date">

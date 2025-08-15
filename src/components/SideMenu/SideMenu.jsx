@@ -97,7 +97,7 @@ function SideMenu({isOpen, onToggleLogin, onMenuToggle}) {
             <img src={userStats.avatar} alt="User avatar" />
             <div className="stats">
               <p>{userStats.comments} Comment{userStats.comments !== 1 ? 's' : ''}</p>
-              <p>{userStats.likes} Liked{userStats.likes !== 1 ? 's' : ''}</p>
+              <p>{userStats.likes} Like{userStats.likes !== 1 ? 's' : ''}</p>
             </div>
           </div>
         ) : (
@@ -128,7 +128,7 @@ function SideMenu({isOpen, onToggleLogin, onMenuToggle}) {
                   disabled={loading}
                 />
                 <Link to="/signup">
-                    <Button className='login-btn' text="Sign up"/>
+                    <Button className='login-btn' text="Sign up" onClick={onMenuToggle}/>
                 </Link>
               </>
             ) : (

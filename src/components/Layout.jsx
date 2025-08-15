@@ -27,12 +27,12 @@ function Layout() {
     const signupSuccess = localStorage.getItem("signupSuccess");
 
     if (loginSuccess === "true" && isAuthenticated) {
-      setSuccessMessage("Login successful!");
+      setSuccessMessage("Login successful! ✓");
       setShowSuccessMessage(true);
       localStorage.removeItem("loginSuccess");
       setTimeout(() => setShowSuccessMessage(false), 3000);
     } else if (signupSuccess === "true") {
-      setSuccessMessage("Account created successfully! You can now log in.");
+      setSuccessMessage("Account created successfully! \n You can now log in. ✓");
       setShowSuccessMessage(true);
       localStorage.removeItem("signupSuccess");
       setTimeout(() => setShowSuccessMessage(false), 4000);

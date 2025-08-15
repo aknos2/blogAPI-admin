@@ -50,7 +50,7 @@
 /* Profile Section */
 .profile {
   text-align: center;
-  padding: 2rem 1rem;
+  padding: 1rem;
   background: var(--sidemenu-profile-bg-color);
   border-radius: 1rem 1rem 0 0;
 }
@@ -82,16 +82,16 @@
 
 .profile h3 {
   font-size: 1.6rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .profile img {
-  width: 80px;
-  height: 80px;
+  width: 7rem;
+  height: 7rem;
   object-fit: cover;
   border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 3px #fff, 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 3px solid var(--profile-border-color);
+  box-shadow: 0 0 0 3px var(--profile-border-shadow), 0 2px 8px rgba(0, 0, 0, 0.1);
   margin: 0 auto 1rem auto;
 }
 
@@ -99,7 +99,7 @@
   display: flex;
   justify-content: center;
   gap: 1.5rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #010101;
 }
 
@@ -130,5 +130,9 @@
     top: calc((19vh - 5px));
     font-size: 2rem;
     width: 18%;
+  }
+
+  .stats {
+    font-size: 1.5rem;
   }
 }

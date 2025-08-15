@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
 import './messageBoard.css';
-import profileImg from '/assets/corgi/profile/white-cat-icon.png';
 import { CloseIcon, SendMsgIcon } from '../Icons';
 import Button from '../Button';
 import { createComment, deleteComment, fetchCommentsByPostId } from '../../../api/posts';
@@ -114,12 +113,11 @@ function MessageBoard({ isChatOpen, onToggleChat, postId }) {
     });
   }, []);
 
-  const canDeleteComment = useCallback((comment) => {
+  const canDeleteComment = useCallback(() => {
     if (!user || !isAuthenticated) return false;
-    const role = user.role?.role;
-    const isOwner = user.userId === comment.user?.id;
-    const isAdmin = role === 'ADMIN';
-    return isOwner || isAdmin;
+    // const isOwner = user.userId === comment.user?.id; 
+    const isAdmin = user?.role === 'ADMIN';
+    return isAdmin; // || isOwner
   }, [user, isAuthenticated]);
 
   return (
@@ -147,7 +145,7 @@ function MessageBoard({ isChatOpen, onToggleChat, postId }) {
                 <div className="upper-part">
                   <p className="username">{comment.user?.username || 'Anonymous'}</p>
                   <p className="message">{comment.content}</p>
-                  {canDeleteComment(comment) && (
+                  {canDeleteComment && (
                     <Button
                       className="delete-comment-btn"
                       onClick={() => handleDeleteMessage(comment.id)}

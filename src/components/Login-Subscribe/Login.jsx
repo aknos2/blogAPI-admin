@@ -92,7 +92,8 @@ function LoginScreen({ onToggleLogin }) {
   };
 
   return (
-    <div>
+    <div className='login-wrap'>
+      <div className='login-container-background'></div>
       <div className="login-container">
         {loggedIn ? (
           <div className="logged-in-state">
@@ -104,6 +105,7 @@ function LoginScreen({ onToggleLogin }) {
                 disabled={logoutLoading}
                 className="logout-btn"
               />
+              <Link to="/">Home</Link>
             </div>
           </div>
         ) : (
@@ -136,7 +138,7 @@ function LoginScreen({ onToggleLogin }) {
               </button>
             </form>
 
-            <p>
+            <p className='sign-up-message'>
               Don't have an account? <a href="/signup">Sign up here</a>
             </p>
 

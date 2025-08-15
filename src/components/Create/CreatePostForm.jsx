@@ -16,7 +16,7 @@ function CreatePostForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { isAuthenticated, user } = useAuth();
-  const isAdmin = isAuthenticated && user?.role?.role === 'ADMIN';
+  const isAdmin = isAuthenticated && user?.role === 'ADMIN';
 
   // Debug user object
   console.log('User object:', user);

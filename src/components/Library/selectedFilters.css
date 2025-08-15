@@ -41,12 +41,12 @@
   transform: translateX(-0.1rem);
 }
 
-figcaption .month-title {
+figcaption .selected-filters-container {
   position: absolute;
   top: 5%;
   padding: 0.5rem;
   transform: translateY(0.5rem);
-  background: rgba(0, 0, 0, 0.153);
+  background: rgba(0, 0, 0, 0.456);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -60,7 +60,7 @@ figcaption .month-title {
   text-transform: capitalize;
 }
 
-.month-title button {
+.selected-filters-container button {
   background-color: transparent;
   color: #fff;
   font-size: 1.2rem;

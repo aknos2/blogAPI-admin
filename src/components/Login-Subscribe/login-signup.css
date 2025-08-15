@@ -11,17 +11,25 @@
 }
 
 .signup-container {
-  border: 1px solid black;
+  border: 1px solid var(--container-border);
   border-top: none;
   width: 50rem;
   padding: 2rem 0.5rem ;
   margin: 0 auto;
-  background-color: var(--container-color);
+  background: linear-gradient(
+    135deg,
+    var(--container-color) 0%,
+    var(--container-gradient) 100%
+  );
+  background-size: 200% 200%;
+  transition: background-position 0.5s ease;
   overflow-y: auto;
+  color: var(--text-color);
 }
 .signup-container h1 {
   text-align: center;
   font-size: 2rem;
+  color: var(--text-color);
 }
 .signup-container-content {
   display: flex;
@@ -29,7 +37,7 @@
 }
 
 .create-account-info {
-  border-left: 1px solid black;
+  border-left: 1px solid var(--messageBoard-avatar-border);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -65,21 +73,21 @@
   display: flex;  
   align-items: center;
   justify-content: center;
-  background-color: var(--bg-color) !important;
-  border: none;
+  background-color: var(--avatar-button-bg-color) !important;
+  border: var(--avatar-button-border);
 }
 .avatar-btn:hover {
-  background-color: rgb(255, 225, 0) !important;
-  border: 2px solid rgb(255, 225, 0);
+  background-color: var(--avatar-hover-bg-color)!important;
+  border: 2px solid var(--avatar-hover-border);
 }
 .avatar-imgs:hover {
-  background-color: rgb(255, 225, 0) !important;
-  border: 2px solid rgb(255, 225, 0);
+  background-color: var(--avatar-hover-bg-color) !important;
+  border: 2px solid var(--avatar-hover-border);
   filter: brightness(100%)
 }
 .selected {
-  background-color: rgb(94, 255, 0) !important;
-  border: 2px solid rgb(28, 28, 32);
+  background-color: var(--avatar-selected-bg-color) !important;
+  border: 2px solid var(--avatar-selected-border);
   filter: brightness(110%);
   transform: scale(120%);
   box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, 0.416);
@@ -109,18 +117,34 @@
   object-position: 50% 50%;
 }
 
+.login-container-background {
+  background-image: url(/assets/corgi/corgi-login.webp);
+  background-size: cover;
+  background-position: center;
+  width: 30rem;
+  height: 28rem;
+  position: absolute; /* ensures .login-container stays positioned inside */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50px;
+  border: 2px solid var(--login-container-wrap-border);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
 
 .login-container {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  border: 1px solid black;
+  border: 1px solid var(--login-container-border);
   border-radius: 99px;
   width: 25rem;
+  height: 23rem;
   padding: 2rem 4rem;
   margin: 0 auto;
-  background-color: white;
+  background-color: var(--login-container);
+  color: var(--text-color);
 }
 .login-container form, 
 .signup-container form {
@@ -132,6 +156,7 @@
 .login-container label,
 .signup-container label {
   margin-top: 0.5rem;
+  font-weight: bold;
 }
 .signup-container label > span {
   font-size: 1rem;
@@ -148,21 +173,31 @@
   font-family: inherit;
   padding: 0.3rem;
   font-weight: bold;
-  background-color: orange;
+  background-color: var(--signup-login-button-color);
 }
 .login-container button:hover,
 .signup-container button:hover {
-  color: azure;
+  color: var(--signup-login-button-hover-text-color);
   cursor: pointer;
 }
 .login-container p {
-  float: right;
-  margin-top: 0.6rem;
+  text-align: center;
+  margin-top: 1.5rem;
   font-size: 0.9rem;
+}
+.sign-up-message {
+  background-color: var(--signup-message-color);
+  padding: 0.3rem;
+  border-radius: 7px;
+  border: 1px solid var(--container-border);
 }
 .login-container a {
   color: blue;
   text-decoration: underline;
+}
+
+.logged-in-state h2 {
+  color: var(--text-color);
 }
 
 .password-input-wrapper {
@@ -200,6 +235,9 @@
   width: 30px;
   height: 30px;
 }
+.close-login-btn svg:hover {
+  fill: var(--signup-login-button-hover-text-color);
+}
 
 .password-instruction {
   font-size: 1rem;
@@ -222,7 +260,7 @@
 
 .success-login-message {
   position: fixed;
-  bottom: 0;
+  top: 5%;
   left: 0;
   border: 0.5px solid black;
   border-left: none;
@@ -238,6 +276,8 @@
   z-index: 999;
   overflow: hidden;
   transition: right 0.7s ease-in-out, opacity 0.7s ease-in-out;
+  border-right: 15px solid rgb(127, 126, 126);
+  white-space: pre-line;
 }
 
 /* Slide in */
@@ -252,11 +292,10 @@
   top: 0;
   left: 0;
   height: 100%;
-  background-color: #53c715; 
+  background-color: #4cb513eb; 
   width: 0%;
   z-index: -1;
   animation: fill-charge 1s ease-in-out forwards;
-  border-radius: 0 4px 4px 0;
 }
 
 @keyframes fill-charge {

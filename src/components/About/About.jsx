@@ -14,7 +14,7 @@ function About() {
         <div className='description'>
           <div className='pt1'>
             <p>I'm a Corgi dog</p>
-            <p>My motto is, food, all good!</p>
+            <p>My motto is food, all good!</p>
           </div>
           <div></div>
           <div className='pt2'>

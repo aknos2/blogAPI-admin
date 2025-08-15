@@ -50,6 +50,9 @@
   transition: color 0.2s ease;
   font-weight: 700;
 }
+.new-posts-btn {
+  cursor: pointer;
+}
 
 .search-date {
   display: flex;
@@ -168,6 +171,12 @@
   margin-left: 1.5rem;
   color: var(--selected-month-text);
   background-color: var(--categories-tags);
+}
+
+.loading-dates {
+  display: flex;
+  justify-content: center;
+  font-size: 1.2rem;
 }
 
 @media(min-width: 1290px) {

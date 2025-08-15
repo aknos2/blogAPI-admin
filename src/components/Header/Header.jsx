@@ -4,7 +4,7 @@ import corgiHeader from '/assets/corgi/corgi-header.webp';
 import Button from '../Button';
 import { useEffect, useState } from 'react';
 
-const themes = ["default", "green", "dark", "west"];
+const themes = ["default","dark", "west"];
 
 function Header({ onMenuToggle, menuBtnRef}) {
   const [themeIndex, setThemeIndex] = useState(0);

@@ -8,6 +8,7 @@ import TinyMCEEditor from '../TinyMCE';
 import parse from 'html-react-parser';
 import { useAuth } from '../../context/useAuthContext';
 import ResponsiveImage from '../ResponsiveImage';
+import LoadingSpinner from '../LoadingAnimation/loadingSpinner';
 
 function Article({ onToggleChat, onPostChange }) { 
   const { articleId } = useParams();
@@ -33,7 +34,7 @@ function Article({ onToggleChat, onPostChange }) {
   const [newPageImage, setNewPageImage] = useState('');
 
   // Fix the admin check
-  const isAdmin = isAuthenticated && user?.role?.role === 'ADMIN';
+  const isAdmin = isAuthenticated && user?.role === 'ADMIN';
 
   // Add debugging
   useEffect(() => {
@@ -59,7 +60,7 @@ function Article({ onToggleChat, onPostChange }) {
           
           // Check if current user has liked this post
           if (isAuthenticated && user && post.Like) {
-            const hasLiked = post.Like.some(like => like.userId === user.id);
+            const hasLiked = post.Like.some(like => like.userId === user.userId);
             if (hasLiked) {
               userLiked.add(post.id);
             }
@@ -303,7 +304,7 @@ function Article({ onToggleChat, onPostChange }) {
 
 
   // Show loading state for both post loading and auth loading
-  if (loading || authLoading || !posts) return <div>Loading...</div>;
+  if (loading || authLoading || !posts) return <LoadingSpinner/>;
   
   // Handle case where article with specific ID is not found
   if (articleId && !currentArticle) {

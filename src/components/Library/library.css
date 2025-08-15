@@ -10,6 +10,13 @@
   max-width: 80vw;
   height: 75vh;
   display: flex;
+  background: linear-gradient(
+    135deg,
+    var(--container-color) 0%,
+    var(--container-gradient) 100%
+  );
+  background-size: 200% 200%;
+  transition: background-position 0.5s ease;
 }
 
 .library-content {
@@ -32,8 +39,14 @@
   overflow-y: auto;
   /* border: 1px solid rgb(65, 110, 42);
   background-color: rgb(242, 242, 229); another style */
-  background-color: var(--photo-container-color);
   height: 100%; 
+  background: linear-gradient(
+    135deg,
+    var(--photo-container-color) 0%,
+    var(--container-gradient) 100%
+  );
+  background-size: 200% 200%;
+  transition: background-position 0.5s ease;
 }
 .articles-compilation figure {
   /* container-type: inline-size; */
@@ -67,13 +80,13 @@
 
   padding: 3em 15% 1em 1em;
   color: #fff;
-  font-size: 0.875rem;
+  font-size: 1.2rem;
   line-height: 1.3;
   background: linear-gradient(transparent 25%, rgb(0 0 0 / 0.75));
 }
 figcaption h3 {
   color: #fff;
-  margin-left: 2px;
+  margin-bottom: 5px;
 }
 .article-card {
   /* border: 1px solid rgb(206, 142, 45); another style*/
@@ -88,8 +101,8 @@ figcaption h3 {
   gap: 0.2rem;
 }
 .card-stats svg{
-  width: 10px;
-  height: 10px
+  width: 20px;
+  height: 20px
 }
 .stats-wrap {
   display: flex;
@@ -109,6 +122,13 @@ figcaption h3 {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.library-loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 @container figure (width > 20rem) {

@@ -20,12 +20,18 @@ function SelectedFilters({
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   };
 
+  // Helper function to stop event propagation
+  const handleFilterClick = (e, callback) => {
+    e.stopPropagation();
+    callback();
+  };
+
   return (
-    <div className={className}>
+    <div className={className} onClick={(e) => e.stopPropagation()}>
       <div className="filters-active">
         {selectedYear && (
           <Button
-            onClick={() => setSelectedYear(null)}
+            onClick={(e) => handleFilterClick(e, () => setSelectedYear(null))}
             className="filter-item"
             text={
               <span className="items-center">
@@ -38,7 +44,7 @@ function SelectedFilters({
 
         {selectedMonth && (
           <Button
-            onClick={() => setSelectedMonth(null)}
+            onClick={(e) => handleFilterClick(e, () => setSelectedMonth(null))}
             className="filter-item"
             text={
               <span className="items-center">
@@ -52,9 +58,9 @@ function SelectedFilters({
         {selectedTags.map((tag) => (
           <Button
             key={tag}
-            onClick={() =>
+            onClick={(e) => handleFilterClick(e, () =>
               setSelectedTags((prev) => prev.filter((t) => t !== tag))
-            }
+            )}
             className="filter-item"
             text={
               <span className="items-center">
@@ -67,7 +73,7 @@ function SelectedFilters({
 
         {searchQuery && (
           <Button
-            onClick={() => setSearchQuery('')}
+            onClick={(e) => handleFilterClick(e, () => setSearchQuery(''))}
             className="filter-item"
             text={
               <span className="items-center">
@@ -82,12 +88,12 @@ function SelectedFilters({
       {hasFilters && (
         <Button
           className="clear-all-btn"
-          onClick={() => {
+          onClick={(e) => handleFilterClick(e, () => {
             setSelectedYear(null);
             setSelectedMonth(null);
             setSelectedTags([]);
             setSearchQuery('');
-          }}
+          })}
           text="Clear all"
         />
       )}
